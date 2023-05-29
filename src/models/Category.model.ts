@@ -1,27 +1,21 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';
 import * as mongoose from 'mongoose';
+import { Creator } from './shared/Creator.model';
 
 export type CategoryDocument = HydratedDocument<Category>;
 
-@Schema({ timestamps: true })
-export class Category {
+@Schema({ timestamps: true, autoCreate: true })
+export class Category extends Creator {
+  @Prop()
+  _id: mongoose.Types.ObjectId;
+
   @Prop({
-    required: true,
-    type: String,
-    trim: true,
-    minlength: 1,
-    maxlength: 250,
     unique: true,
   })
   name: string;
 
   @Prop({
-    required: true,
-    type: String,
-    trim: true,
-    minlength: 1,
-    maxlength: 300,
     unique: true,
     index: true,
   })
@@ -35,15 +29,8 @@ export class Category {
     ref: 'Category',
   })
   parentCategory: Category;
-
-  @Prop({
-    required: true,
-    type: mongoose.Types.ObjectId,
-    ref: 'User',
-  })
-  createdBy: string;
 }
 
-const CategorySchema = SchemaFactory.createForClass(Category);
+export const CategorySchema = SchemaFactory.createForClass(Category);
 
-export { CategorySchema };
+CategorySchema.loadClass(Category);

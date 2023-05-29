@@ -5,28 +5,21 @@ import { Product } from './Product.model';
 
 export type SupplierDocument = HydratedDocument<Supplier>;
 
-@Schema({ timestamps: true })
+@Schema({ timestamps: true, autoCreate: true })
 export class Supplier {
-  @Prop({
-    required: true,
-    type: String,
-    trim: true,
-    minlength: 1,
-    maxlength: 250,
-    unique: true,
-  })
+  @Prop()
+  _id: mongoose.Types.ObjectId;
+
+  @Prop({ unique: true })
   name: string;
 
-  @Prop({
-    required: true,
-    type: String,
-  })
+  @Prop()
   country: string;
 
   @Prop([{ type: mongoose.Types.ObjectId, ref: 'Product' }])
   products: Product[];
 }
 
-const SupplierSchema = SchemaFactory.createForClass(Supplier);
+export const SupplierSchema = SchemaFactory.createForClass(Supplier);
 
-export { SupplierSchema };
+SupplierSchema.loadClass(Supplier);
