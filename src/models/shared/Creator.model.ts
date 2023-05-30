@@ -5,13 +5,13 @@ import { User } from '../User.model';
 export abstract class Creator {
   @Prop({
     type: mongoose.Schema.Types.ObjectId,
-    ref: User.name,
+    ref: 'User',
   })
   createdBy: User;
 
   @Prop({
     type: mongoose.Schema.Types.ObjectId,
-    ref: User.name,
+    ref: 'User',
   })
   updatedBy: User;
 

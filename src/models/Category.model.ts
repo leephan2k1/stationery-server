@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument } from 'mongoose';
 import * as mongoose from 'mongoose';
+import { HydratedDocument } from 'mongoose';
 import { Creator } from './shared/Creator.model';
 
 export type CategoryDocument = HydratedDocument<Category>;
@@ -21,12 +21,12 @@ export class Category extends Creator {
   })
   category_slug: string;
 
-  @Prop([{ type: mongoose.Schema.Types.ObjectId, ref: Category.name }])
+  @Prop([{ type: mongoose.Schema.Types.ObjectId, ref: 'Category' }])
   subCategories: string[];
 
   @Prop({
     type: mongoose.Schema.Types.ObjectId,
-    ref: Category.name,
+    ref: 'Category',
   })
   parentCategory: string;
 }

@@ -24,19 +24,19 @@ export class Product extends Creator {
 
   @Prop({
     type: mongoose.Schema.Types.ObjectId,
-    ref: Category.name,
+    ref: 'Category',
   })
   category: string;
 
   @Prop({
     type: mongoose.Schema.Types.ObjectId,
-    ref: Supplier.name,
+    ref: 'Supplier',
   })
   supplier: string;
 
   @Prop({
     type: mongoose.Schema.Types.ObjectId,
-    ref: Brand.name,
+    ref: 'Brand',
   })
   brand: string;
 
