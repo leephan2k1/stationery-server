@@ -2,13 +2,9 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';
 import * as mongoose from 'mongoose';
 import { Creator } from './shared/Creator.model';
+import { ProductInStock } from 'src/common/interfaces/productInStock.interface';
 
 export type WarehouseDocument = HydratedDocument<Warehouse>;
-
-export interface ProductInStock {
-  sku: string;
-  quantity: number;
-}
 
 @Schema({ timestamps: true, autoCreate: true })
 export class Warehouse extends Creator {

@@ -2,11 +2,12 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';
 import * as mongoose from 'mongoose';
 import { Product } from './Product.model';
+import { Creator } from './shared/Creator.model';
 
 export type SupplierDocument = HydratedDocument<Supplier>;
 
 @Schema({ timestamps: true, autoCreate: true })
-export class Supplier {
+export class Supplier extends Creator {
   @Prop()
   _id: mongoose.Types.ObjectId;
 
