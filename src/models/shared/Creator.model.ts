@@ -9,9 +9,21 @@ export abstract class Creator {
   })
   createdBy: User;
 
+  @Prop({
+    type: mongoose.Schema.Types.ObjectId,
+    ref: User.name,
+  })
+  updatedBy: User;
+
   setCreatedBy(userId: string) {
     const user = new User();
     user._id = new mongoose.Types.ObjectId(userId);
     this.createdBy = user;
+  }
+
+  setUpdatedBy(userId: string) {
+    const user = new User();
+    user._id = new mongoose.Types.ObjectId(userId);
+    this.updatedBy = user;
   }
 }
