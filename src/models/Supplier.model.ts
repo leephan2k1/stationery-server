@@ -20,9 +20,12 @@ export class SupplierModel extends CreatorModel {
     model.id = supplier._id.toString();
     model.name = supplier.name;
     model.country = supplier.country;
-    model.products = supplier.products.map((e) => {
-      return ProductModel.fromEntity(e);
-    });
+
+    if (supplier.products) {
+      model.products = supplier.products.map((e) => {
+        return ProductModel.fromEntity(e);
+      });
+    }
 
     return model;
   }
