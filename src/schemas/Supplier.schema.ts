@@ -2,6 +2,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import * as mongoose from 'mongoose';
 import { Document } from 'mongoose';
 import { Creator } from './shared/Creator.schema';
+import { Product } from './Product.schema';
 
 export type SupplierDocument = Supplier & Document;
 
@@ -17,7 +18,7 @@ export class Supplier extends Creator {
   country: string;
 
   @Prop([{ type: mongoose.Schema.Types.ObjectId, ref: 'Product' }])
-  products: string[];
+  products: Product[];
 }
 
 export const SupplierSchema = SchemaFactory.createForClass(Supplier);

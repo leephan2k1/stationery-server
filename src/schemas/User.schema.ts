@@ -38,7 +38,7 @@ export class User {
   gender: Gender;
 
   @Prop()
-  role: Role[];
+  roles: Role[];
 
   @Prop()
   permissions: Permission[];

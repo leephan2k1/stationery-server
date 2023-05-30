@@ -2,6 +2,9 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import * as mongoose from 'mongoose';
 import { HydratedDocument } from 'mongoose';
 import { Creator } from './shared/Creator.schema';
+import { Brand } from './Brand.schema';
+import { Supplier } from './Supplier.schema';
+import { Category } from './Category.schema';
 
 export type ProductDocument = HydratedDocument<Product>;
 
@@ -23,19 +26,19 @@ export class Product extends Creator {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Category',
   })
-  category: string;
+  category: Category;
 
   @Prop({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Supplier',
   })
-  supplier: string;
+  supplier: Supplier;
 
   @Prop({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Brand',
   })
-  brand: string;
+  brand: Brand;
 
   @Prop({ required: true, type: Object })
   specific_properties: object;

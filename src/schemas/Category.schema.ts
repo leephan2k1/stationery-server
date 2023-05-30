@@ -22,7 +22,7 @@ export class Category extends Creator {
   category_slug: string;
 
   @Prop([{ type: mongoose.Schema.Types.ObjectId, ref: 'Category' }])
-  subCategories: string[];
+  subCategories: Category[];
 
   @Prop({
     type: mongoose.Schema.Types.ObjectId,
