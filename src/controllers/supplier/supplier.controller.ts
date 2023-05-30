@@ -26,6 +26,14 @@ export class SupplierController {
     @Body() createSupplierDto: PostSupplierRequest,
     @Res() res: Response,
   ) {
+    const errors = await this.supplierService.validatePostSupplier(
+      createSupplierDto,
+    );
+
+    if (errors && errors.length > 0) {
+      return res.status(HttpStatus.BAD_REQUEST).send({ message: errors });
+    }
+
     const supplier = await this.supplierService.create(createSupplierDto);
 
     return res.status(HttpStatus.CREATED).send(supplier);
