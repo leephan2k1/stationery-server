@@ -23,23 +23,22 @@ export class Product extends Creator {
   sku: string;
 
   @Prop({
-    required: true,
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Category',
+    ref: Category.name,
   })
-  category: Category;
+  category: string;
 
   @Prop({
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Supplier',
+    ref: Supplier.name,
   })
-  supplier: Supplier;
+  supplier: string;
 
   @Prop({
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Brand',
+    ref: Brand.name,
   })
-  brand: Brand;
+  brand: string;
 
   @Prop({ required: true, type: Object })
   specific_properties: object;
@@ -67,24 +66,6 @@ export class Product extends Creator {
 
   @Prop()
   description: string;
-
-  setSupplier(supplierId: string) {
-    const supplier = new Supplier();
-    supplier._id = new mongoose.Types.ObjectId(supplierId);
-    this.supplier = supplier;
-  }
-
-  setBrand(brandId: string) {
-    const brand = new Brand();
-    brand._id = new mongoose.Types.ObjectId(brandId);
-    this.brand = brand;
-  }
-
-  setCategory(categoryId: string) {
-    const category = new Category();
-    category._id = new mongoose.Types.ObjectId(categoryId);
-    this.category = category;
-  }
 }
 
 export const ProductSchema = SchemaFactory.createForClass(Product);

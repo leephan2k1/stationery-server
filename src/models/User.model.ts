@@ -1,6 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import * as mongoose from 'mongoose';
 import { HydratedDocument } from 'mongoose';
+import { Contact } from './Contact.model';
 
 export type UserDocument = HydratedDocument<User>;
 
@@ -44,6 +45,9 @@ export class User {
 
   @Prop()
   fullName: string;
+
+  @Prop()
+  contacts: Contact[];
 
   @Prop()
   dateOfBirth: Date;

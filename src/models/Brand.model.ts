@@ -16,8 +16,8 @@ export class Brand extends Creator {
   })
   name: string;
 
-  @Prop([{ type: mongoose.Schema.Types.ObjectId, ref: 'Product' }])
-  products: Product[];
+  @Prop([{ type: mongoose.Schema.Types.ObjectId, ref: Product.name }])
+  products: string[];
 }
 
 export const BrandSchema = SchemaFactory.createForClass(Brand);

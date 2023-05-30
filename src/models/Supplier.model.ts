@@ -16,8 +16,8 @@ export class Supplier {
   @Prop()
   country: string;
 
-  @Prop([{ type: mongoose.Types.ObjectId, ref: 'Product' }])
-  products: Product[];
+  @Prop([{ type: mongoose.Schema.Types.ObjectId, ref: Product.name }])
+  products: string[];
 }
 
 export const SupplierSchema = SchemaFactory.createForClass(Supplier);
