@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import * as mongoose from 'mongoose';
 import { Document } from 'mongoose';
-import { Creator } from './shared/Creator.model';
+import { Creator } from './shared/Creator.schema';
 
 export type SupplierDocument = Supplier & Document;
 

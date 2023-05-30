@@ -2,7 +2,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import * as mongoose from 'mongoose';
 import { HydratedDocument } from 'mongoose';
 import { ProductInStock } from 'src/common/interfaces/productInStock.interface';
-import { Creator } from './shared/Creator.model';
+import { Creator } from './shared/Creator.schema';
 
 export type WarehouseDocument = HydratedDocument<Warehouse>;
 

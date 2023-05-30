@@ -1,6 +1,6 @@
 import { Prop } from '@nestjs/mongoose';
 import * as mongoose from 'mongoose';
-import { User } from '../User.model';
+import { User } from '../User.schema';
 
 export abstract class Creator {
   @Prop({
