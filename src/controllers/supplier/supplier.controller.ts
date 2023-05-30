@@ -1,29 +1,29 @@
 import {
-  Controller,
-  Get,
-  Post,
   Body,
-  Patch,
-  Param,
+  Controller,
   Delete,
-  UsePipes,
-  ValidationPipe,
-  Res,
+  Get,
   HttpStatus,
+  Param,
+  Patch,
+  Post,
+  Res,
 } from '@nestjs/common';
-import { SupplierService } from 'src/services/supplier.service';
-import { CreateSupplierDto } from '../dtos/supplier/create-supplier.dto';
-import { UpdateSupplierDto } from '../dtos/supplier/update-supplier.dto';
+import { ApiResponse } from '@nestjs/swagger';
 import { Response } from 'express';
+import { SupplierService } from 'src/services/supplier.service';
+import { PatchSupplierRequest } from './patch-supplier.request';
+import { PostSupplierRequest } from './post-supplier.request';
+import { PostSupplierResponse } from './post-supplier.response';
 
 @Controller('supplier')
 export class SupplierController {
   constructor(private readonly supplierService: SupplierService) {}
 
   @Post()
-  @UsePipes(ValidationPipe)
+  @ApiResponse({ status: HttpStatus.CREATED, type: PostSupplierResponse })
   async create(
-    @Body() createSupplierDto: CreateSupplierDto,
+    @Body() createSupplierDto: PostSupplierRequest,
     @Res() res: Response,
   ) {
     const supplier = await this.supplierService.create(createSupplierDto);
@@ -44,7 +44,7 @@ export class SupplierController {
   @Patch(':id')
   update(
     @Param('id') id: string,
-    @Body() updateSupplierDto: UpdateSupplierDto,
+    @Body() updateSupplierDto: PatchSupplierRequest,
   ) {
     return this.supplierService.update(+id, updateSupplierDto);
   }

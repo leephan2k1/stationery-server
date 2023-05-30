@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { CreateSupplierDto } from '../dtos/supplier/create-supplier.dto';
-import { UpdateSupplierDto } from '../dtos/supplier/update-supplier.dto';
+import { PostSupplierRequest } from 'src/controllers/supplier/post-supplier.request';
+import { PatchSupplierRequest } from 'src/controllers/supplier/patch-supplier.request';
 import { SupplierRepository } from 'src/repositories/supplier.repository';
 import { SupplierModel } from 'src/models/Supplier.model';
 
@@ -8,7 +8,7 @@ import { SupplierModel } from 'src/models/Supplier.model';
 export class SupplierService {
   constructor(private readonly supplierRepo: SupplierRepository) {}
 
-  async create(createSupplierDto: CreateSupplierDto): Promise<SupplierModel> {
+  async create(createSupplierDto: PostSupplierRequest): Promise<SupplierModel> {
     const supplierModel = await this.supplierRepo.createNewSupplier(
       createSupplierDto,
     );
@@ -24,7 +24,7 @@ export class SupplierService {
     return `This action returns a #${id} supplier`;
   }
 
-  update(id: number, updateSupplierDto: UpdateSupplierDto) {
+  update(id: number, updateSupplierDto: PatchSupplierRequest) {
     return `This action updates a #${id} supplier`;
   }
 
