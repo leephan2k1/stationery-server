@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PostBrandRequest } from 'src/controllers/brand/post-brand.request';
+import { PutBrandRequest } from 'src/controllers/brand/put-brand.request';
 import { BrandModel } from 'src/models/Brand.model';
 import { BrandRepository } from 'src/repositories/brand.repository';
 
@@ -13,11 +14,13 @@ export class BrandService {
     return BrandModel.fromEntity(brandModel);
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} brand`;
+  async findOne(id: string): Promise<BrandModel> {
+    const brandModel = await this.brandRepo.findById(id);
+
+    return BrandModel.fromEntity(brandModel);
   }
 
-  update(id: number) {
+  async update(id: string, reqBody: PutBrandRequest) {
     return `This action updates a #${id} brand`;
   }
 

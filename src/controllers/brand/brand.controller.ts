@@ -5,7 +5,7 @@ import {
   Get,
   HttpStatus,
   Param,
-  Patch,
+  Put,
   Post,
   Res,
 } from '@nestjs/common';
@@ -15,6 +15,8 @@ import { BrandService } from '../../services/brand.service';
 import { PostBrandRequest } from './post-brand.request';
 import { PostBrandResponse } from './post-brand.response';
 import { ApiMessage, BaseResponse } from 'src/common/response';
+import { GetBrandResponse } from './get-brand.response';
+import { PutBrandRequest } from './put-brand.request';
 
 @ApiTags('brands')
 @Controller('brands')
@@ -40,13 +42,16 @@ export class BrandController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.brandService.findOne(+id);
+  @ApiResponse({ status: HttpStatus.OK, type: GetBrandResponse })
+  async findOne(@Param('id') id: string, @Res() res: Response) {
+    const model = await this.brandService.findOne(id);
+
+    return res.status(HttpStatus.OK).send(GetBrandResponse.of(model));
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string) {
-    return this.brandService.update(+id);
+  @Put(':id')
+  update(@Param('id') id: string, @Body() reqBody: PutBrandRequest) {
+    return this.brandService.update(id, reqBody);
   }
 
   @Delete(':id')
