@@ -16,4 +16,10 @@ export class PostBrandRequest {
     entity.name = this.name;
     return entity;
   }
+
+  public createEntityWithoutId(): Brand {
+    const entity = new Brand();
+    entity.name = this.name;
+    return entity;
+  }
 }

@@ -3,6 +3,7 @@ import { PostBrandRequest } from 'src/controllers/brand/post-brand.request';
 import { PutBrandRequest } from 'src/controllers/brand/put-brand.request';
 import { BrandModel } from 'src/models/Brand.model';
 import { BrandRepository } from 'src/repositories/brand.repository';
+import isEmptyObject from 'src/utils/checkEmptyObject';
 
 @Injectable()
 export class BrandService {
@@ -20,8 +21,10 @@ export class BrandService {
     return BrandModel.fromEntity(brandModel);
   }
 
-  async update(id: string, reqBody: PutBrandRequest) {
-    return `This action updates a #${id} brand`;
+  async update(id: string, reqBody: PutBrandRequest): Promise<BrandModel> {
+    const brandEntity = reqBody.createEntityWithoutId();
+    const brandModel = await this.brandRepo.updateById(id, brandEntity);
+    return BrandModel.fromEntity(brandModel);
   }
 
   remove(id: number) {
@@ -39,6 +42,24 @@ export class BrandService {
       errors.push('name must be longer than or equal 1 character');
     }
     if (name && name.length > 150) {
+      errors.push('name must be shorter than or equal 150 characters');
+    }
+
+    return errors.length > 0 ? errors : null;
+  }
+
+  async validateUpdateBody(reqBody: PutBrandRequest) {
+    const errors = [];
+
+    if (isEmptyObject(reqBody)) {
+      errors.push('body data at least 1 field');
+    }
+
+    if (reqBody?.name && reqBody.name === '') {
+      errors.push('name must be longer than or equal 1 character');
+    }
+
+    if (reqBody?.name && reqBody.name.length > 150) {
       errors.push('name must be shorter than or equal 150 characters');
     }
 

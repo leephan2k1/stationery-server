@@ -34,4 +34,10 @@ export class BrandRepository {
 
     return brand;
   }
+
+  async updateById(id: string, brand: Brand) {
+    return this.model.findByIdAndUpdate(new ObjectId(id), brand, {
+      new: true,
+    });
+  }
 }

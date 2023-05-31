@@ -50,8 +50,25 @@ export class BrandController {
   }
 
   @Put(':id')
-  update(@Param('id') id: string, @Body() reqBody: PutBrandRequest) {
-    return this.brandService.update(id, reqBody);
+  @ApiResponse({ status: HttpStatus.OK, type: GetBrandResponse })
+  async update(
+    @Param('id') id: string,
+    @Body() reqBody: PutBrandRequest,
+    @Res() res: Response,
+  ) {
+    const errs: ApiMessage[] = await this.brandService.validateUpdateBody(
+      reqBody,
+    );
+
+    if (errs && errs.length > 0) {
+      return res
+        .status(HttpStatus.BAD_REQUEST)
+        .send(new BaseResponse(false, errs));
+    }
+
+    const model = await this.brandService.update(id, reqBody);
+
+    return res.status(HttpStatus.OK).send(GetBrandResponse.of(model));
   }
 
   @Delete(':id')
