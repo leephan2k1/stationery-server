@@ -1,26 +1,20 @@
 import { Injectable } from '@nestjs/common';
-import { PostSupplierRequest } from 'src/controllers/supplier/post-supplier.request';
 import { PatchSupplierRequest } from 'src/controllers/supplier/patch-supplier.request';
 import { SupplierRepository } from 'src/repositories/supplier.repository';
 import { SupplierModel } from 'src/models/Supplier.model';
+import { PostSupplierRequest } from 'src/controllers/supplier';
 
 @Injectable()
 export class SupplierService {
   constructor(private readonly supplierRepo: SupplierRepository) {}
 
-  async create(createSupplierDto: PostSupplierRequest): Promise<SupplierModel> {
-    const supplierModel = await this.supplierRepo.createNewSupplier(
-      createSupplierDto,
-    );
-
+  async create(requestBody: PostSupplierRequest): Promise<SupplierModel> {
+    const supplierEntity = requestBody.createEntity();
+    const supplierModel = await this.supplierRepo.save(supplierEntity);
     return SupplierModel.fromEntity(supplierModel);
   }
 
-  async validatePostSupplier({
-    name,
-    country,
-    createdBy,
-  }: PostSupplierRequest) {
+  async validatePostSupplier({ name, country }: PostSupplierRequest) {
     const errors = [];
 
     if (!name) {
@@ -41,13 +35,6 @@ export class SupplierService {
     }
     if (country && country.length > 150) {
       errors.push('country must be shorter than or equal 150 characters');
-    }
-
-    if (!createdBy) {
-      errors.push('createdBy is missing');
-    }
-    if (createdBy && !createdBy.match(/^[a-f\d]{24}$/i)) {
-      errors.push('createdBy is not mongodb id');
     }
 
     return errors.length > 0 ? errors : null;

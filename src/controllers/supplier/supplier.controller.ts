@@ -1,5 +1,6 @@
 import {
   Body,
+  ClassSerializerInterceptor,
   Controller,
   Delete,
   Get,
@@ -9,34 +10,45 @@ import {
   Post,
   Res,
 } from '@nestjs/common';
-import { ApiResponse } from '@nestjs/swagger';
+import { Req, UseInterceptors } from '@nestjs/common/decorators';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
+import { ApiMessage, BaseResponse } from 'src/common/response';
 import { SupplierService } from 'src/services/supplier.service';
 import { PatchSupplierRequest } from './patch-supplier.request';
 import { PostSupplierRequest } from './post-supplier.request';
 import { PostSupplierResponse } from './post-supplier.response';
 
-@Controller('supplier')
+@ApiTags('suppliers')
+@Controller('suppliers')
+@UseInterceptors(ClassSerializerInterceptor)
 export class SupplierController {
   constructor(private readonly supplierService: SupplierService) {}
 
+  /**
+   * Add new supplier
+   * @param res
+   * @param requestBody
+   * @returns
+   */
   @Post()
-  @ApiResponse({ status: HttpStatus.CREATED, type: PostSupplierResponse })
-  async create(
-    @Body() createSupplierDto: PostSupplierRequest,
-    @Res() res: Response,
+  @ApiOperation({ operationId: 'addSupplier' })
+  @ApiResponse({ status: HttpStatus.OK, type: PostSupplierResponse })
+  public async create(
+    @Req() req: Express.Request,
+    @Res() res: any,
+    @Body() requestBody: PostSupplierRequest,
   ) {
-    const errors = await this.supplierService.validatePostSupplier(
-      createSupplierDto,
+    const errs: ApiMessage[] = await this.supplierService.validatePostSupplier(
+      requestBody,
     );
-
-    if (errors && errors.length > 0) {
-      return res.status(HttpStatus.BAD_REQUEST).send({ message: errors });
+    if (errs && errs.length > 0) {
+      return res
+        .status(HttpStatus.BAD_REQUEST)
+        .send(new BaseResponse(false, errs));
     }
-
-    const supplier = await this.supplierService.create(createSupplierDto);
-
-    return res.status(HttpStatus.CREATED).send(supplier);
+    const model = await this.supplierService.create(requestBody);
+    return res.status(HttpStatus.OK).send(PostSupplierResponse.of(model));
   }
 
   @Get()

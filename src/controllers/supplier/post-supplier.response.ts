@@ -1,16 +1,17 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { ProductModel } from 'src/models/Product.model';
+import { BaseResponse } from 'src/common/response';
+import { SupplierModel } from 'src/models/Supplier.model';
 
-export class PostSupplierResponse {
-  @ApiProperty()
-  id: string;
+export class PostSupplierResponse extends BaseResponse {
+  @ApiProperty({ type: SupplierModel })
+  data: SupplierModel;
 
-  @ApiProperty()
-  name: string;
+  constructor(data: SupplierModel) {
+    super(true, null);
+    this.data = data;
+  }
 
-  @ApiProperty()
-  country: string;
-
-  @ApiProperty()
-  products: ProductModel[];
+  static of(data: SupplierModel): PostSupplierResponse {
+    return new PostSupplierResponse(data);
+  }
 }
