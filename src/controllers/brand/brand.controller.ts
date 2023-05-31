@@ -72,7 +72,10 @@ export class BrandController {
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.brandService.remove(+id);
+  @ApiResponse({ status: HttpStatus.OK, type: GetBrandResponse })
+  async remove(@Param('id') id: string, @Res() res: Response) {
+    const model = await this.brandService.remove(id);
+
+    return res.status(HttpStatus.OK).send(GetBrandResponse.of(model));
   }
 }

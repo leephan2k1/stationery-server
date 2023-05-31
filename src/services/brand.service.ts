@@ -27,8 +27,10 @@ export class BrandService {
     return BrandModel.fromEntity(brandModel);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} brand`;
+  async remove(id: string): Promise<BrandModel> {
+    const deletedBrand = await this.brandRepo.deleteById(id);
+
+    return BrandModel.fromEntity(deletedBrand);
   }
 
   async validatePostBody({ name }: PostBrandRequest) {

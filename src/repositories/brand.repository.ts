@@ -35,9 +35,24 @@ export class BrandRepository {
     return brand;
   }
 
-  async updateById(id: string, brand: Brand) {
+  async updateById(id: string, brand: Brand): Promise<Brand> {
     return this.model.findByIdAndUpdate(new ObjectId(id), brand, {
       new: true,
     });
+  }
+
+  async deleteById(id: string): Promise<Brand> {
+    let brand;
+    try {
+      brand = await this.model.findByIdAndDelete(new ObjectId(id)).exec();
+    } catch (error) {
+      throw new BadRequestException(error);
+    }
+
+    if (!brand) {
+      throw new NotFoundException('brand not found');
+    }
+
+    return brand;
   }
 }
