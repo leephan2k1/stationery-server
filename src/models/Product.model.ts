@@ -1,73 +1,77 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import * as mongoose from 'mongoose';
-import { HydratedDocument } from 'mongoose';
-import { Brand } from './Brand.model';
-import { Category } from './Category.model';
-import { Supplier } from './Supplier.model';
-import { Creator } from './shared/Creator.model';
+import { ApiProperty } from '@nestjs/swagger';
+import { Product } from 'src/schemas/Product.schema';
+import { BrandModel } from './Brand.model';
+import { CategoryModel } from './Category.model';
+import { SupplierModel } from './Supplier.model';
+import { UserModel } from './User.model';
+import { CreatorModel } from './shared/Creator.model';
 
-export type ProductDocument = HydratedDocument<Product>;
-
-@Schema({ timestamps: true, autoCreate: true })
-export class Product extends Creator {
-  @Prop()
-  _id: mongoose.Types.ObjectId;
-
-  @Prop({ unique: true, index: true })
+export class ProductModel extends CreatorModel {
+  @ApiProperty()
   name: string;
 
-  @Prop({ unique: true, index: true })
+  @ApiProperty()
   product_slug: string;
 
-  @Prop({ unique: true, index: true })
+  @ApiProperty()
   sku: string;
 
-  @Prop({
-    type: mongoose.Schema.Types.ObjectId,
-    ref: Category.name,
-  })
-  category: string;
+  @ApiProperty()
+  category: CategoryModel;
 
-  @Prop({
-    type: mongoose.Schema.Types.ObjectId,
-    ref: Supplier.name,
-  })
-  supplier: string;
+  @ApiProperty()
+  supplier: SupplierModel;
 
-  @Prop({
-    type: mongoose.Schema.Types.ObjectId,
-    ref: Brand.name,
-  })
-  brand: string;
+  @ApiProperty()
+  brand: BrandModel;
 
-  @Prop({ required: true, type: Object })
+  @ApiProperty()
   specific_properties: object;
 
-  @Prop()
+  @ApiProperty()
   price: number;
 
-  @Prop()
+  @ApiProperty()
   weight: number;
 
-  @Prop()
+  @ApiProperty()
   size: string;
 
-  @Prop()
+  @ApiProperty()
   thumbnail: string;
 
-  @Prop()
+  @ApiProperty()
   discount_percent: number;
 
-  @Prop()
+  @ApiProperty()
   images: string[];
 
-  @Prop()
+  @ApiProperty()
   stock_available: boolean;
 
-  @Prop()
+  @ApiProperty()
   description: string;
+
+  static fromEntity(product: Product) {
+    if (!product) return null;
+
+    const model = new ProductModel();
+    model.id = product._id.toString();
+    model.name = product.name;
+    model.product_slug = product.product_slug;
+
+    model.brand = BrandModel.fromEntity(product.brand);
+    model.createdBy = UserModel.fromEntity(product.createdBy);
+    model.updatedBy = UserModel.fromEntity(product.updatedBy);
+
+    model.specific_properties = product.specific_properties;
+    model.price = product.price;
+    model.thumbnail = product.thumbnail;
+    model.discount_percent = product.discount_percent;
+    model.images = product.images;
+    model.stock_available = product.stock_available;
+    model.description = product.description;
+
+    return model;
+  }
 }
-
-export const ProductSchema = SchemaFactory.createForClass(Product);
-
-ProductSchema.loadClass(Product);

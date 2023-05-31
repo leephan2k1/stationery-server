@@ -1,46 +1,51 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import * as mongoose from 'mongoose';
-import { HydratedDocument } from 'mongoose';
-import { Contact } from './Contact.model';
-import { Permission } from 'src/common/enums/permission.enum';
+import { ApiProperty } from '@nestjs/swagger';
 import { Gender } from 'src/common/enums/gender.enum';
+import { Permission } from 'src/common/enums/permission.enum';
 import { Role } from 'src/common/enums/role.enum';
+import { User } from 'src/schemas/User.schema';
+import { ContactModel } from './Contact.model';
+import { BaseModel } from './shared/Base.model';
 
-export type UserDocument = HydratedDocument<User>;
-
-@Schema({ timestamps: true, autoCreate: true })
-export class User {
-  @Prop()
-  _id: mongoose.Types.ObjectId;
-
-  @Prop({
-    unique: true,
-    index: true,
-  })
+export class UserModel extends BaseModel {
+  @ApiProperty()
   email: string;
 
-  @Prop()
-  password: string;
-
-  @Prop()
+  @ApiProperty()
   fullName: string;
 
-  @Prop()
-  contacts: Contact[];
+  @ApiProperty()
+  contacts: ContactModel[];
 
-  @Prop()
+  @ApiProperty()
   dateOfBirth: Date;
 
-  @Prop()
+  @ApiProperty()
   gender: Gender;
 
-  @Prop()
-  role: Role[];
+  @ApiProperty()
+  roles: Role[];
 
-  @Prop()
+  @ApiProperty()
   permissions: Permission[];
+
+  static fromEntity(user: User) {
+    if (!user) return null;
+
+    const model = new UserModel();
+
+    model.id = user._id.toString();
+    model.email = user.email;
+    model.fullName = user.first_name + ' ' + user.last_name;
+
+    if (user.contacts) {
+      model.contacts = user.contacts.map((e) => ContactModel.fromEntity(e));
+    }
+
+    model.dateOfBirth = user.dateOfBirth;
+    model.gender = user.gender;
+    model.roles = user.roles;
+    model.permissions = user.permissions;
+
+    return model;
+  }
 }
-
-export const UserSchema = SchemaFactory.createForClass(User);
-
-UserSchema.loadClass(User);

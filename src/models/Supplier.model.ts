@@ -1,26 +1,32 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument } from 'mongoose';
-import * as mongoose from 'mongoose';
-import { Product } from './Product.model';
-import { Creator } from './shared/Creator.model';
+import { ApiProperty } from '@nestjs/swagger';
+import { ProductModel } from './Product.model';
+import { CreatorModel } from './shared/Creator.model';
+import { Supplier } from 'src/schemas/Supplier.schema';
 
-export type SupplierDocument = HydratedDocument<Supplier>;
-
-@Schema({ timestamps: true, autoCreate: true })
-export class Supplier extends Creator {
-  @Prop()
-  _id: mongoose.Types.ObjectId;
-
-  @Prop({ unique: true })
+export class SupplierModel extends CreatorModel {
+  @ApiProperty()
   name: string;
 
-  @Prop()
+  @ApiProperty()
   country: string;
 
-  @Prop([{ type: mongoose.Schema.Types.ObjectId, ref: Product.name }])
-  products: string[];
+  @ApiProperty()
+  products: ProductModel[];
+
+  static fromEntity(supplier: Supplier) {
+    if (!supplier) return null;
+
+    const model = new SupplierModel();
+    model.id = supplier._id.toString();
+    model.name = supplier.name;
+    model.country = supplier.country;
+
+    if (supplier.products) {
+      model.products = supplier.products.map((e) => {
+        return ProductModel.fromEntity(e);
+      });
+    }
+
+    return model;
+  }
 }
-
-export const SupplierSchema = SchemaFactory.createForClass(Supplier);
-
-SupplierSchema.loadClass(Supplier);

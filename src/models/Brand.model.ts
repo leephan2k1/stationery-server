@@ -1,25 +1,22 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument } from 'mongoose';
-import * as mongoose from 'mongoose';
-import { Product } from './Product.model';
-import { Creator } from './shared/Creator.model';
+import { ApiProperty } from '@nestjs/swagger';
+import { ProductModel } from './Product.model';
+import { CreatorModel } from './shared/Creator.model';
+import { Brand } from 'src/schemas/Brand.schema';
 
-export type BrandDocument = HydratedDocument<Brand>;
-
-@Schema({ timestamps: true, autoCreate: true })
-export class Brand extends Creator {
-  @Prop()
-  _id: mongoose.Types.ObjectId;
-
-  @Prop({
-    unique: true,
-  })
+export class BrandModel extends CreatorModel {
+  @ApiProperty()
   name: string;
 
-  @Prop([{ type: mongoose.Schema.Types.ObjectId, ref: Product.name }])
-  products: string[];
+  @ApiProperty()
+  products: ProductModel[];
+
+  static fromEntity(brand: Brand) {
+    if (!brand) return null;
+
+    const model = new BrandModel();
+    model.id = brand._id.toString();
+    model.name = brand.name;
+
+    return model;
+  }
 }
-
-export const BrandSchema = SchemaFactory.createForClass(Brand);
-
-BrandSchema.loadClass(Brand);

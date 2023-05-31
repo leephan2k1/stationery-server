@@ -1,10 +1,21 @@
-import { Prop } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import { ApiProperty } from '@nestjs/swagger';
+import { Contact } from 'src/schemas/Contact.schema';
 
-export class Contact extends Document {
-  @Prop()
+export class ContactModel {
+  @ApiProperty()
   phone_number: string;
 
-  @Prop()
+  @ApiProperty()
   address: string;
+
+  static fromEntity(contact: Contact) {
+    if (!contact) return null;
+
+    const model = new ContactModel();
+
+    model.address = contact.address;
+    model.phone_number = contact.phone_number;
+
+    return model;
+  }
 }

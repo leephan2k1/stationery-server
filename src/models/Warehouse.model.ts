@@ -1,26 +1,27 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument } from 'mongoose';
-import * as mongoose from 'mongoose';
-import { Creator } from './shared/Creator.model';
+import { ApiProperty } from '@nestjs/swagger';
 import { ProductInStock } from 'src/common/interfaces/productInStock.interface';
+import { CreatorModel } from './shared/Creator.model';
+import { Warehouse } from 'src/schemas/Warehouse.schema';
 
-export type WarehouseDocument = HydratedDocument<Warehouse>;
-
-@Schema({ timestamps: true, autoCreate: true })
-export class Warehouse extends Creator {
-  @Prop()
-  _id: mongoose.Types.ObjectId;
-
-  @Prop()
+export class WarehouseModel extends CreatorModel {
+  @ApiProperty()
   name: string;
 
-  @Prop()
+  @ApiProperty()
   location: string;
 
-  @Prop({ index: true })
+  @ApiProperty()
   products: ProductInStock[];
+
+  static fromEntity(warehouse: Warehouse) {
+    if (!warehouse) return null;
+
+    const model = new WarehouseModel();
+    model.id = warehouse._id.toString();
+    model.name = warehouse.name;
+    model.location = warehouse.location;
+    model.products = warehouse.products;
+
+    return model;
+  }
 }
-
-export const WarehouseSchema = SchemaFactory.createForClass(Warehouse);
-
-WarehouseSchema.loadClass(Warehouse);
