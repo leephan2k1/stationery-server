@@ -53,6 +53,17 @@ export class SupplierRepository {
   }
 
   async delete(id: string): Promise<Supplier> {
-    return await this.model.findByIdAndDelete(new ObjectId(id)).exec();
+    let supplier;
+    try {
+      supplier = await this.model.findByIdAndDelete(new ObjectId(id)).exec();
+    } catch (error) {
+      throw new BadRequestException(error);
+    }
+
+    if (!supplier) {
+      throw new NotFoundException('supplier not found');
+    }
+
+    return supplier;
   }
 }

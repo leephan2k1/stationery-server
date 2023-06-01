@@ -82,7 +82,10 @@ export class SupplierController {
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.supplierService.remove(+id);
+  @ApiResponse({ status: HttpStatus.OK, type: GetSupplierResponse })
+  async remove(@Param('id') id: string, @Res() res: Response) {
+    const model = await this.supplierService.remove(id);
+
+    return res.status(HttpStatus.OK).send(GetSupplierResponse.of(model));
   }
 }

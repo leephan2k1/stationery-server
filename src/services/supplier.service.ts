@@ -52,13 +52,18 @@ export class SupplierService {
     return SupplierModel.fromEntity(model);
   }
 
-  async update(id: string, updateSupplierDto: PatchSupplierRequest) {
+  async update(
+    id: string,
+    updateSupplierDto: PatchSupplierRequest,
+  ): Promise<SupplierModel> {
     const supplierEntity = updateSupplierDto.createEntityWithoutId();
     const supplierModel = await this.supplierRepo.update(id, supplierEntity);
     return SupplierModel.fromEntity(supplierModel);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} supplier`;
+  async remove(id: string): Promise<SupplierModel> {
+    const model = await this.supplierRepo.delete(id);
+
+    return SupplierModel.fromEntity(model);
   }
 }
