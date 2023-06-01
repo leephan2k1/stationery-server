@@ -84,4 +84,25 @@ export class CategoryRepository {
 
     return updatedModel;
   }
+
+  async deleteBySlug(category_slug: string) {
+    let deletedCategory;
+
+    try {
+      deletedCategory = await this.model
+        .findOneAndDelete({ category_slug })
+        .populate({
+          path: 'subCategories',
+          select: ['_id', 'name', 'category_slug'],
+        });
+    } catch (error) {
+      throw new BadRequestException(error);
+    }
+
+    if (!deletedCategory) {
+      throw new NotFoundException(`category ${category_slug} not found`);
+    }
+
+    return deletedCategory;
+  }
 }

@@ -74,8 +74,11 @@ export class CategoryController {
     return res.status(HttpStatus.OK).send(GetCategoryResponse.of(model));
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.categoryService.remove(+id);
+  @Delete(':slug')
+  @ApiResponse({ status: HttpStatus.OK, type: GetCategoryResponse })
+  async remove(@Param('slug') slug: string, @Res() res: Response) {
+    const model = await this.categoryService.delete(slug);
+
+    return res.status(HttpStatus.OK).send(GetCategoryResponse.of(model));
   }
 }

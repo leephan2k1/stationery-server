@@ -15,7 +15,7 @@ export class CategoryService {
     return CategoryModel.fromEntity(model);
   }
 
-  async findOne(slug: string) {
+  async findOne(slug: string): Promise<CategoryModel> {
     const model = await this.categoryRepo.findBySlug(slug);
 
     return CategoryModel.fromEntity(model);
@@ -27,6 +27,12 @@ export class CategoryService {
   ): Promise<CategoryModel> {
     const entity = reqBody.createEntityWithoutId();
     const model = await this.categoryRepo.updateBySlug(slug, entity);
+
+    return CategoryModel.fromEntity(model);
+  }
+
+  async delete(slug: string): Promise<CategoryModel> {
+    const model = await this.categoryRepo.deleteBySlug(slug);
 
     return CategoryModel.fromEntity(model);
   }
