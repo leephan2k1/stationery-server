@@ -3,6 +3,10 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Product, ProductDocument } from 'src/schemas/Product.schema';
 import * as slug from 'slug';
+import {
+  BadRequestException,
+  NotFoundException,
+} from '@nestjs/common/exceptions';
 
 @Injectable()
 export class ProductRepository {
@@ -12,5 +16,25 @@ export class ProductRepository {
 
   async save(reqBody: Product): Promise<Product> {
     return this.model.create({ ...reqBody, product_slug: slug(reqBody.name) });
+  }
+
+  async findProdBySlug(product_slug: string): Promise<Product> {
+    let product;
+    try {
+      product = await this.model
+        .findOne({ product_slug })
+        .populate({ path: 'category', select: ['name', 'category_slug'] })
+        .populate({ path: 'brand', select: ['name'] })
+        .populate({ path: 'supplier', select: ['name', 'country'] })
+        .exec();
+    } catch (error) {
+      throw new BadRequestException(error);
+    }
+
+    if (!product) {
+      throw new NotFoundException('product not found');
+    }
+
+    return product;
   }
 }

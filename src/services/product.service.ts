@@ -18,8 +18,10 @@ export class ProductService {
     return `This action returns all product`;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} product`;
+  async findOne(slug: string): Promise<ProductModel> {
+    const model = await this.prodRepo.findProdBySlug(slug);
+
+    return ProductModel.fromEntity(model);
   }
 
   update(id: number) {

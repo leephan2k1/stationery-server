@@ -11,7 +11,7 @@ import {
 } from '@nestjs/common';
 import { ProductService } from '../../services/product.service';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
-import { PostProductRequest, PostProductResponse } from '.';
+import { GetProductResponse, PostProductRequest, PostProductResponse } from '.';
 import { ApiMessage, BaseResponse } from 'src/common/response';
 import { Response } from 'express';
 
@@ -43,9 +43,12 @@ export class ProductController {
     return this.productService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.productService.findOne(+id);
+  @Get(':slug')
+  @ApiResponse({ status: HttpStatus.OK, type: GetProductResponse })
+  async findOne(@Param('slug') slug: string, @Res() res: Response) {
+    const model = await this.productService.findOne(slug);
+
+    return res.status(HttpStatus.OK).send(GetProductResponse.of(model));
   }
 
   @Patch(':id')

@@ -72,6 +72,16 @@ export class ProductModel extends CreatorModel {
       model.updatedBy = UserModel.fromEntity(product.updatedBy);
     }
 
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    //@ts-ignore
+    model.category = product.category;
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    //@ts-ignore
+    model.brand = product.brand;
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    //@ts-ignore
+    model.supplier = product.supplier;
+
     model.specific_properties = product.specific_properties;
     model.price = product.price;
     model.thumbnail = product.thumbnail;
