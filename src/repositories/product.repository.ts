@@ -37,4 +37,32 @@ export class ProductRepository {
 
     return product;
   }
+
+  async updateProdBySlug(
+    product_slug: string,
+    reqBody: Product,
+  ): Promise<Product> {
+    let product;
+
+    if (reqBody.name) {
+      reqBody.product_slug = slug(reqBody.name);
+    }
+
+    try {
+      product = await this.model
+        .findOneAndUpdate({ product_slug }, reqBody, { new: true })
+        .populate({ path: 'category', select: ['name', 'category_slug'] })
+        .populate({ path: 'brand', select: ['name'] })
+        .populate({ path: 'supplier', select: ['name', 'country'] })
+        .exec();
+    } catch (error) {
+      throw new BadRequestException(error);
+    }
+
+    if (!product) {
+      throw new NotFoundException('product not found');
+    }
+
+    return product;
+  }
 }

@@ -44,11 +44,14 @@ export class PostProductRequest {
     if (!withoutId) {
       entity._id = new mongoose.Types.ObjectId();
     }
-    entity.name = this.name.toLocaleLowerCase();
+    entity.name = this.name?.toLocaleLowerCase();
 
-    entity.category = new mongoose.Types.ObjectId(String(this.category));
-    entity.supplier = new mongoose.Types.ObjectId(String(this.supplier));
-    entity.brand = new mongoose.Types.ObjectId(String(this.brand));
+    entity.category =
+      this.category && new mongoose.Types.ObjectId(String(this.category));
+    entity.supplier =
+      this.supplier && new mongoose.Types.ObjectId(String(this.supplier));
+    entity.brand =
+      this.brand && new mongoose.Types.ObjectId(String(this.brand));
 
     entity.specific_properties = this.specific_properties;
     entity.price = this.price;

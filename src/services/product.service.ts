@@ -24,8 +24,11 @@ export class ProductService {
     return ProductModel.fromEntity(model);
   }
 
-  update(id: number) {
-    return `This action updates a #${id} product`;
+  async update(slug: string, reqBody: PostProductRequest) {
+    const entity = reqBody.createEntity({ withoutId: true });
+    const model = await this.prodRepo.updateProdBySlug(slug, entity);
+
+    return ProductModel.fromEntity(model);
   }
 
   remove(id: number) {

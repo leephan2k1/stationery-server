@@ -5,7 +5,7 @@ import {
   Get,
   HttpStatus,
   Param,
-  Patch,
+  Put,
   Post,
   Res,
 } from '@nestjs/common';
@@ -51,9 +51,16 @@ export class ProductController {
     return res.status(HttpStatus.OK).send(GetProductResponse.of(model));
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string) {
-    return this.productService.update(+id);
+  @Put(':slug')
+  @ApiResponse({ status: HttpStatus.OK, type: GetProductResponse })
+  async update(
+    @Param('slug') slug: string,
+    @Body() reqBody: PostProductRequest,
+    @Res() res: Response,
+  ) {
+    const model = await this.productService.update(slug, reqBody);
+
+    return res.status(HttpStatus.OK).send(GetProductResponse.of(model));
   }
 
   @Delete(':id')
