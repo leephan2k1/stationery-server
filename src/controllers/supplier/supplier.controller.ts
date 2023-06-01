@@ -6,7 +6,7 @@ import {
   Get,
   HttpStatus,
   Param,
-  Patch,
+  Put,
   Post,
   Res,
 } from '@nestjs/common';
@@ -39,7 +39,7 @@ export class SupplierController {
     @Res() res: Response,
     @Body() requestBody: PostSupplierRequest,
   ) {
-    const errs: ApiMessage[] = await this.supplierService.validatePostSupplier(
+    const errs: ApiMessage[] = await this.supplierService.validateBodySupplier(
       requestBody,
     );
     if (errs && errs.length > 0) {
@@ -59,12 +59,26 @@ export class SupplierController {
     return res.status(HttpStatus.OK).send(GetSupplierResponse.of(model));
   }
 
-  @Patch(':id')
-  update(
+  @Put(':id')
+  @ApiResponse({ status: HttpStatus.OK, type: GetSupplierResponse })
+  async update(
     @Param('id') id: string,
     @Body() updateSupplierDto: PatchSupplierRequest,
+    @Res() res: Response,
   ) {
-    return this.supplierService.update(+id, updateSupplierDto);
+    const errs: ApiMessage[] = await this.supplierService.validateBodySupplier({
+      name: updateSupplierDto.name,
+      country: updateSupplierDto.country,
+    });
+    if (errs && errs.length > 0) {
+      return res
+        .status(HttpStatus.BAD_REQUEST)
+        .send(new BaseResponse(false, errs));
+    }
+
+    const model = await this.supplierService.update(id, updateSupplierDto);
+
+    return res.status(HttpStatus.OK).send(GetSupplierResponse.of(model));
   }
 
   @Delete(':id')

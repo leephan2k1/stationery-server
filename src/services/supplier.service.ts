@@ -14,7 +14,13 @@ export class SupplierService {
     return SupplierModel.fromEntity(supplierModel);
   }
 
-  async validatePostSupplier({ name, country }: PostSupplierRequest) {
+  async validateBodySupplier({
+    name,
+    country,
+  }: {
+    name?: string;
+    country?: string;
+  }) {
     const errors = [];
 
     if (!name) {
@@ -46,8 +52,10 @@ export class SupplierService {
     return SupplierModel.fromEntity(model);
   }
 
-  update(id: number, updateSupplierDto: PatchSupplierRequest) {
-    return `This action updates a #${id} supplier`;
+  async update(id: string, updateSupplierDto: PatchSupplierRequest) {
+    const supplierEntity = updateSupplierDto.createEntityWithoutId();
+    const supplierModel = await this.supplierRepo.update(id, supplierEntity);
+    return SupplierModel.fromEntity(supplierModel);
   }
 
   remove(id: number) {

@@ -21,4 +21,11 @@ export class PostSupplierRequest {
     entity._id = new mongoose.Types.ObjectId();
     return entity;
   }
+
+  public createEntityWithoutId(): Supplier {
+    const entity = new Supplier();
+    entity.name = this.name;
+    entity.country = this.country;
+    return entity;
+  }
 }
