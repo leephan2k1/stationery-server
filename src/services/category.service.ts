@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PostCategoryRequest } from 'src/controllers/category/post-category.request';
+import { PutCategoryRequest } from 'src/controllers/category/put-category.request';
 import { CategoryModel } from 'src/models/Category.model';
 import { CategoryRepository } from 'src/repositories/category.repository';
 
@@ -20,8 +21,14 @@ export class CategoryService {
     return CategoryModel.fromEntity(model);
   }
 
-  update(id: number) {
-    return `This action updates a #${id} category`;
+  async update(
+    slug: string,
+    reqBody: PutCategoryRequest,
+  ): Promise<CategoryModel> {
+    const entity = reqBody.createEntityWithoutId();
+    const model = await this.categoryRepo.updateBySlug(slug, entity);
+
+    return CategoryModel.fromEntity(model);
   }
 
   remove(id: number) {

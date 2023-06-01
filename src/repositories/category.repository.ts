@@ -36,7 +36,7 @@ export class CategoryRepository {
     try {
       category = await this.model.findOne({ category_slug: slug }).populate({
         path: 'subCategories',
-        select: ['name', '_id', 'category_slug'],
+        select: ['_id', 'name', 'category_slug'],
       });
     } catch (error) {
       throw new BadRequestException(error);
@@ -45,5 +45,43 @@ export class CategoryRepository {
     if (!category) throw new NotFoundException('category not found');
 
     return category;
+  }
+
+  async updateBySlug(category_slug: string, reqBody: Category) {
+    let updatedModel;
+
+    try {
+      updatedModel = await this.model
+        .findOneAndUpdate(
+          { category_slug },
+          { ...reqBody, category_slug: slug(reqBody.name) },
+          {
+            new: true,
+          },
+        )
+        .populate({
+          path: 'subCategories',
+          select: ['_id', 'name', 'category_slug'],
+        });
+
+      //update category for parent
+      if (reqBody.parentCategory) {
+        setTimeout(async () => {
+          await this.model.findByIdAndUpdate(reqBody.parentCategory, {
+            $addToSet: { subCategories: updatedModel._id },
+          });
+        }, 0);
+      }
+    } catch (error) {
+      console.log('error:: ', error);
+
+      throw new BadRequestException(error);
+    }
+
+    if (!updatedModel) {
+      throw new NotFoundException(`category ${category_slug} not found`);
+    }
+
+    return updatedModel;
   }
 }
