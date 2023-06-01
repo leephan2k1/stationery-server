@@ -26,19 +26,19 @@ export class Product extends Creator {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Category',
   })
-  category: Category;
+  category: mongoose.Types.ObjectId;
 
   @Prop({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Supplier',
   })
-  supplier: Supplier;
+  supplier: mongoose.Types.ObjectId;
 
   @Prop({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Brand',
   })
-  brand: Brand;
+  brand: mongoose.Types.ObjectId;
 
   @Prop({ required: true, type: Object })
   specific_properties: object;
