@@ -5,6 +5,8 @@ import { CategoryModel } from './Category.model';
 import { SupplierModel } from './Supplier.model';
 import { UserModel } from './User.model';
 import { CreatorModel } from './shared/Creator.model';
+import { Brand } from 'src/schemas/Brand.schema';
+import { User } from 'src/schemas/User.schema';
 
 export class ProductModel extends CreatorModel {
   @ApiProperty()
@@ -16,13 +18,13 @@ export class ProductModel extends CreatorModel {
   @ApiProperty()
   sku: string;
 
-  @ApiProperty()
+  @ApiProperty({ type: () => CategoryModel })
   category: CategoryModel;
 
-  @ApiProperty()
+  @ApiProperty({ type: () => SupplierModel })
   supplier: SupplierModel;
 
-  @ApiProperty()
+  @ApiProperty({ type: () => BrandModel })
   brand: BrandModel;
 
   @ApiProperty()
@@ -60,9 +62,15 @@ export class ProductModel extends CreatorModel {
     model.name = product.name;
     model.product_slug = product.product_slug;
 
-    model.brand = BrandModel.fromEntity(product.brand);
-    model.createdBy = UserModel.fromEntity(product.createdBy);
-    model.updatedBy = UserModel.fromEntity(product.updatedBy);
+    if (product.brand instanceof Brand) {
+      model.brand = BrandModel.fromEntity(product.brand);
+    }
+    if (product.createdBy instanceof User) {
+      model.createdBy = UserModel.fromEntity(product.createdBy);
+    }
+    if (product.updatedBy instanceof User) {
+      model.updatedBy = UserModel.fromEntity(product.updatedBy);
+    }
 
     model.specific_properties = product.specific_properties;
     model.price = product.price;
