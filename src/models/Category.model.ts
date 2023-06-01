@@ -20,12 +20,19 @@ export class CategoryModel extends CreatorModel {
 
     const model = new CategoryModel();
 
+    model.id = category._id.toString();
+    model.name = category.name;
+    model.category_slug = category.category_slug;
+
     if (category.parentCategory) {
       model.parentCategory = String(category.parentCategory);
     }
 
-    model.id = category._id.toString();
-    model.name = category.name;
+    if (category.subCategories && category.subCategories.length > 0) {
+      model.subCategories = category.subCategories.map((e) =>
+        CategoryModel.fromEntity(e),
+      );
+    }
 
     return model;
   }

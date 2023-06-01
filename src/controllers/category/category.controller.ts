@@ -15,6 +15,7 @@ import { PostCategoryRequest } from './post-category.request';
 import { Response } from 'express';
 import { ApiMessage, BaseResponse } from 'src/common/response';
 import { PostCategoryResponse } from './post-category.response';
+import { GetCategoryResponse } from './get-category.response';
 
 @ApiTags('categories')
 @Controller('categories')
@@ -40,9 +41,12 @@ export class CategoryController {
     return res.status(HttpStatus.CREATED).send(PostCategoryResponse.of(model));
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.categoryService.findOne(+id);
+  @Get(':slug')
+  @ApiResponse({ status: HttpStatus.CREATED, type: GetCategoryResponse })
+  async findOne(@Param('slug') slug: string, @Res() res: Response) {
+    const model = await this.categoryService.findOne(slug);
+
+    return res.status(HttpStatus.OK).send(PostCategoryResponse.of(model));
   }
 
   @Patch(':id')

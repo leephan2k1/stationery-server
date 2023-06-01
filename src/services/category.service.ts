@@ -14,8 +14,10 @@ export class CategoryService {
     return CategoryModel.fromEntity(model);
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} category`;
+  async findOne(slug: string) {
+    const model = await this.categoryRepo.findBySlug(slug);
+
+    return CategoryModel.fromEntity(model);
   }
 
   update(id: number) {

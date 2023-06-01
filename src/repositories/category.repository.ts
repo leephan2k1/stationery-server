@@ -1,4 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import * as slug from 'slug';
@@ -24,5 +28,22 @@ export class CategoryRepository {
     }
 
     return newModel;
+  }
+
+  async findBySlug(slug: string) {
+    let category;
+
+    try {
+      category = await this.model.findOne({ category_slug: slug }).populate({
+        path: 'subCategories',
+        select: ['name', '_id', 'category_slug'],
+      });
+    } catch (error) {
+      throw new BadRequestException(error);
+    }
+
+    if (!category) throw new NotFoundException('category not found');
+
+    return category;
   }
 }
