@@ -14,7 +14,13 @@ export class SupplierService {
     return SupplierModel.fromEntity(supplierModel);
   }
 
-  async validatePostSupplier({ name, country }: PostSupplierRequest) {
+  async validateBodySupplier({
+    name,
+    country,
+  }: {
+    name?: string;
+    country?: string;
+  }) {
     const errors = [];
 
     if (!name) {
@@ -40,19 +46,24 @@ export class SupplierService {
     return errors.length > 0 ? errors : null;
   }
 
-  findAll() {
-    return `This action returns all supplier`;
+  async findOne(id: string): Promise<SupplierModel> {
+    const model = await this.supplierRepo.findById(id);
+
+    return SupplierModel.fromEntity(model);
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} supplier`;
+  async update(
+    id: string,
+    updateSupplierDto: PatchSupplierRequest,
+  ): Promise<SupplierModel> {
+    const supplierEntity = updateSupplierDto.createEntityWithoutId();
+    const supplierModel = await this.supplierRepo.update(id, supplierEntity);
+    return SupplierModel.fromEntity(supplierModel);
   }
 
-  update(id: number, updateSupplierDto: PatchSupplierRequest) {
-    return `This action updates a #${id} supplier`;
-  }
+  async remove(id: string): Promise<SupplierModel> {
+    const model = await this.supplierRepo.delete(id);
 
-  remove(id: number) {
-    return `This action removes a #${id} supplier`;
+    return SupplierModel.fromEntity(model);
   }
 }
