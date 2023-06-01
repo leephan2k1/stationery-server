@@ -33,4 +33,19 @@ export class WarehouseRepository {
 
     return warehouse;
   }
+
+  async deleteWarehouseById(id: string) {
+    let warehouse;
+    try {
+      warehouse = await this.model.findByIdAndDelete(new ObjectId(id)).exec();
+    } catch (error) {
+      throw new BadRequestException(error);
+    }
+
+    if (!warehouse) {
+      throw new NotFoundException('supplier not found');
+    }
+
+    return warehouse;
+  }
 }

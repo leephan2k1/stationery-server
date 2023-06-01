@@ -59,7 +59,10 @@ export class WarehouseController {
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.warehouseService.remove(+id);
+  @ApiResponse({ status: HttpStatus.OK, type: GetWarehouseResponse })
+  async remove(@Param('id') id: string, @Res() res: Response) {
+    const model = await this.warehouseService.remove(id);
+
+    return res.status(HttpStatus.OK).send(GetWarehouseResponse.of(model));
   }
 }

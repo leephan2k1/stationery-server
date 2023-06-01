@@ -27,8 +27,9 @@ export class WarehouseService {
     return `This action updates a #${id} warehouse`;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} warehouse`;
+  async remove(id: string) {
+    const model = await this.warehouseRepo.deleteWarehouseById(id);
+    return WarehouseModel.fromEntity(model);
   }
 
   async validatePostRequest({ name, location }: PostWarehouseRequest) {
