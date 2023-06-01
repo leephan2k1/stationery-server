@@ -63,8 +63,11 @@ export class ProductController {
     return res.status(HttpStatus.OK).send(GetProductResponse.of(model));
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.productService.remove(+id);
+  @Delete(':slug')
+  @ApiResponse({ status: HttpStatus.OK, type: GetProductResponse })
+  async remove(@Param('slug') slug: string, @Res() res: Response) {
+    const model = await this.productService.remove(slug);
+
+    return res.status(HttpStatus.OK).send(GetProductResponse.of(model));
   }
 }

@@ -31,8 +31,10 @@ export class ProductService {
     return ProductModel.fromEntity(model);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} product`;
+  async remove(slug: string) {
+    const model = await this.prodRepo.deleteBySlug(slug);
+
+    return ProductModel.fromEntity(model);
   }
 
   async validatePostBody({
