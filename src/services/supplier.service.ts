@@ -40,12 +40,10 @@ export class SupplierService {
     return errors.length > 0 ? errors : null;
   }
 
-  findAll() {
-    return `This action returns all supplier`;
-  }
+  async findOne(id: string): Promise<SupplierModel> {
+    const model = await this.supplierRepo.findById(id);
 
-  findOne(id: number) {
-    return `This action returns a #${id} supplier`;
+    return SupplierModel.fromEntity(model);
   }
 
   update(id: number, updateSupplierDto: PatchSupplierRequest) {

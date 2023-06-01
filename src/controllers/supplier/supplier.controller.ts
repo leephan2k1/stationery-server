@@ -10,11 +10,12 @@ import {
   Post,
   Res,
 } from '@nestjs/common';
-import { Req, UseInterceptors } from '@nestjs/common/decorators';
+import { UseInterceptors } from '@nestjs/common/decorators';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
 import { ApiMessage, BaseResponse } from 'src/common/response';
 import { SupplierService } from 'src/services/supplier.service';
+import { GetSupplierResponse } from './get-supplier.response';
 import { PatchSupplierRequest } from './patch-supplier.request';
 import { PostSupplierRequest } from './post-supplier.request';
 import { PostSupplierResponse } from './post-supplier.response';
@@ -33,10 +34,9 @@ export class SupplierController {
    */
   @Post()
   @ApiOperation({ operationId: 'addSupplier' })
-  @ApiResponse({ status: HttpStatus.OK, type: PostSupplierResponse })
+  @ApiResponse({ status: HttpStatus.CREATED, type: PostSupplierResponse })
   public async create(
-    @Req() req: Express.Request,
-    @Res() res: any,
+    @Res() res: Response,
     @Body() requestBody: PostSupplierRequest,
   ) {
     const errs: ApiMessage[] = await this.supplierService.validatePostSupplier(
@@ -48,17 +48,15 @@ export class SupplierController {
         .send(new BaseResponse(false, errs));
     }
     const model = await this.supplierService.create(requestBody);
-    return res.status(HttpStatus.OK).send(PostSupplierResponse.of(model));
-  }
-
-  @Get()
-  findAll() {
-    return this.supplierService.findAll();
+    return res.status(HttpStatus.CREATED).send(PostSupplierResponse.of(model));
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.supplierService.findOne(+id);
+  @ApiResponse({ status: HttpStatus.OK, type: GetSupplierResponse })
+  async findOne(@Param('id') id: string, @Res() res: Response) {
+    const model = await this.supplierService.findOne(id);
+
+    return res.status(HttpStatus.OK).send(GetSupplierResponse.of(model));
   }
 
   @Patch(':id')
