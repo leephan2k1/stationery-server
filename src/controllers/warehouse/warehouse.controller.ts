@@ -15,6 +15,7 @@ import { PostWarehouseRequest } from './post-warehouse.request';
 import { ApiMessage, BaseResponse } from 'src/common/response';
 import { Response } from 'express';
 import { PostWarehouseResponse } from './post-warehouse.response';
+import { GetWarehouseResponse } from './get-warehouse.response';
 
 @ApiTags('warehouses')
 @Controller('warehouses')
@@ -45,8 +46,11 @@ export class WarehouseController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.warehouseService.findOne(+id);
+  @ApiResponse({ status: HttpStatus.OK, type: GetWarehouseResponse })
+  async findOne(@Param('id') id: string, @Res() res: Response) {
+    const model = await this.warehouseService.findOne(id);
+
+    return res.status(HttpStatus.OK).send(GetWarehouseResponse.of(model));
   }
 
   @Patch(':id')

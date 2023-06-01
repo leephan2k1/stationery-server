@@ -7,7 +7,7 @@ import { WarehouseRepository } from 'src/repositories/warehouse.repository';
 export class WarehouseService {
   constructor(private readonly warehouseRepo: WarehouseRepository) {}
 
-  async create(reqBody: PostWarehouseRequest) {
+  async create(reqBody: PostWarehouseRequest): Promise<WarehouseModel> {
     const entity = reqBody.createEntity({ withoutId: false });
     const model = await this.warehouseRepo.save(entity);
 
@@ -18,8 +18,9 @@ export class WarehouseService {
     return `This action returns all warehouse`;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} warehouse`;
+  async findOne(id: string): Promise<WarehouseModel> {
+    const model = await this.warehouseRepo.findWarehouseById(id);
+    return WarehouseModel.fromEntity(model);
   }
 
   update(id: number) {
