@@ -11,7 +11,7 @@ export class Warehouse extends Creator {
   @Prop()
   _id: mongoose.Types.ObjectId;
 
-  @Prop()
+  @Prop({ unique: true })
   name: string;
 
   @Prop()

@@ -48,4 +48,32 @@ export class WarehouseRepository {
 
     return warehouse;
   }
+
+  async updateWarehouseById(
+    id: string,
+    { name, location, products }: Warehouse,
+  ) {
+    let warehouse;
+    try {
+      warehouse = await this.model
+        .findByIdAndUpdate(
+          new ObjectId(id),
+          {
+            $addToSet: { products: { $each: products } },
+            name,
+            location,
+          },
+          { new: true },
+        )
+        .exec();
+    } catch (error) {
+      throw new BadRequestException(error);
+    }
+
+    if (!warehouse) {
+      throw new NotFoundException('supplier not found');
+    }
+
+    return warehouse;
+  }
 }

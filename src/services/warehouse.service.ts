@@ -23,8 +23,14 @@ export class WarehouseService {
     return WarehouseModel.fromEntity(model);
   }
 
-  update(id: number) {
-    return `This action updates a #${id} warehouse`;
+  async update(
+    id: string,
+    reqBody: PostWarehouseRequest,
+  ): Promise<WarehouseModel> {
+    const entity = reqBody.createEntity({ withoutId: true });
+    const model = await this.warehouseRepo.updateWarehouseById(id, entity);
+
+    return WarehouseModel.fromEntity(model);
   }
 
   async remove(id: string) {

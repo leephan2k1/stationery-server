@@ -2,7 +2,7 @@ import {
   Controller,
   Get,
   Post,
-  Patch,
+  Put,
   Param,
   Delete,
   Body,
@@ -53,9 +53,16 @@ export class WarehouseController {
     return res.status(HttpStatus.OK).send(GetWarehouseResponse.of(model));
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string) {
-    return this.warehouseService.update(+id);
+  @Put(':id')
+  @ApiResponse({ status: HttpStatus.OK, type: GetWarehouseResponse })
+  async update(
+    @Param('id') id: string,
+    @Body() reqBody: PostWarehouseRequest,
+    @Res() res: Response,
+  ) {
+    const model = await this.warehouseService.update(id, reqBody);
+
+    return res.status(HttpStatus.OK).send(GetWarehouseResponse.of(model));
   }
 
   @Delete(':id')
