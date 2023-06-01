@@ -21,14 +21,14 @@ export class Category extends Creator {
   })
   category_slug: string;
 
-  @Prop([{ type: mongoose.Schema.Types.ObjectId, ref: 'Category' }])
+  @Prop([{ type: mongoose.Schema.Types.ObjectId, ref: 'subCategories' }])
   subCategories: Category[];
 
   @Prop({
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Category',
+    ref: 'parentCategory',
   })
-  parentCategory: string;
+  parentCategory: mongoose.Types.ObjectId;
 }
 
 export const CategorySchema = SchemaFactory.createForClass(Category);
