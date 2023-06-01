@@ -28,7 +28,7 @@ export class Category extends Creator {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Category',
   })
-  parentCategory: string;
+  parentCategory: mongoose.Types.ObjectId;
 }
 
 export const CategorySchema = SchemaFactory.createForClass(Category);
