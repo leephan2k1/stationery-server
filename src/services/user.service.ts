@@ -74,4 +74,10 @@ export class UserService {
       count,
     };
   }
+
+  async deleteUser(id: string): Promise<UserModel> {
+    const model = await this.userRepo.deleteUserById(id);
+
+    return UserModel.fromEntity(model);
+  }
 }

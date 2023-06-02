@@ -85,4 +85,19 @@ export class UserRepository {
 
     return { users, count };
   }
+
+  async deleteUserById(id: string): Promise<User> {
+    let user;
+    try {
+      user = await this.model
+        .findByIdAndDelete(new mongoose.Types.ObjectId(id))
+        .exec();
+    } catch (error) {
+      throw new BadRequestException(error);
+    }
+
+    if (!user) throw new NotFoundException('user not found');
+
+    return user;
+  }
 }
