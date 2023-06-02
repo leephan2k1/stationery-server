@@ -69,7 +69,7 @@ export class BrandController {
   @Put(':id')
   @Roles(Role.ADMIN, Role.EMPLOYEE)
   @UseGuards(RolesGuard)
-  @Permissions(Permission.CREATE_BRAND)
+  @Permissions(Permission.UPDATE_BRAND)
   @UseGuards(PermissionsGuard)
   @ApiResponse({ status: HttpStatus.OK, type: GetBrandResponse })
   async update(
@@ -94,6 +94,10 @@ export class BrandController {
   }
 
   @Delete(':id')
+  @Roles(Role.ADMIN, Role.EMPLOYEE)
+  @UseGuards(RolesGuard)
+  @Permissions(Permission.DELETE_BRAND)
+  @UseGuards(PermissionsGuard)
   @ApiResponse({ status: HttpStatus.OK, type: GetBrandResponse })
   async remove(@Param('id') id: string, @Res() res: Response) {
     const model = await this.brandService.remove(id);
