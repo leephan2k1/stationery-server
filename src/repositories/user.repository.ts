@@ -31,10 +31,8 @@ export class UserRepository {
       user = await this.model.findByIdAndUpdate(
         new mongoose.Types.ObjectId(id),
         {
-          $addToSet: {
-            permissions: { $each: permissions },
-            roles: { $each: roles },
-          },
+          permissions: permissions,
+          roles: roles,
         },
       );
     } catch (error) {
