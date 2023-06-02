@@ -7,8 +7,12 @@ import { ProductRepository } from 'src/repositories/product.repository';
 export class ProductService {
   constructor(private readonly prodRepo: ProductRepository) {}
 
-  async create(reqBody: PostProductRequest): Promise<ProductModel> {
+  async create(
+    reqBody: PostProductRequest,
+    userId: string,
+  ): Promise<ProductModel> {
     const entity = reqBody.createEntity({ withoutId: false });
+    entity.setCreatedBy(userId);
     const model = await this.prodRepo.save(entity);
 
     return ProductModel.fromEntity(model);
@@ -24,8 +28,9 @@ export class ProductService {
     return ProductModel.fromEntity(model);
   }
 
-  async update(slug: string, reqBody: PostProductRequest) {
+  async update(slug: string, reqBody: PostProductRequest, userId: string) {
     const entity = reqBody.createEntity({ withoutId: true });
+    entity.setUpdatedBy(userId);
     const model = await this.prodRepo.updateProdBySlug(slug, entity);
 
     return ProductModel.fromEntity(model);
