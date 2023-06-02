@@ -25,7 +25,11 @@ export class AuthController {
   @Post('sign-in')
   @UseGuards(LocalAuthGuard)
   @ApiResponse({ status: HttpStatus.OK, type: GetUserResponse })
-  async signIn(@Req() req: UserSessionRequest, @Res() res: Response) {
+  async signIn(
+    @Req() req: UserSessionRequest,
+    @Res() res: Response,
+    @Body() reqBody: PostUserRequest,
+  ) {
     return res.status(HttpStatus.OK).send(GetUserResponse.of(req.user));
   }
 
