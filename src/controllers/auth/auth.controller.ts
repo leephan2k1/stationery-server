@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Get,
   HttpStatus,
   Post,
   Req,
@@ -11,7 +12,7 @@ import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
 import { UserSessionRequest } from 'src/common/interfaces/userSession.interface';
 import { ApiMessage, BaseResponse } from 'src/common/response';
-import { LocalAuthGuard } from 'src/guards/localAuth.guard';
+import { AuthenticatedGuard, LocalAuthGuard } from 'src/guards/localAuth.guard';
 import { UserService } from 'src/services/user.service';
 import { GetUserResponse } from '../user/get-user.response';
 import { PostUserRequest } from '../user/post-user.request';
@@ -21,6 +22,13 @@ import { PostUserResponse } from '../user/post-user.response';
 @Controller('auth')
 export class AuthController {
   constructor(private readonly userService: UserService) {}
+
+  @Get('status')
+  @UseGuards(AuthenticatedGuard)
+  @ApiResponse({ status: HttpStatus.OK, type: GetUserResponse })
+  async userStatus(@Req() req: UserSessionRequest, @Res() res: Response) {
+    return res.status(HttpStatus.OK).send(GetUserResponse.of(req.user));
+  }
 
   @Post('sign-in')
   @UseGuards(LocalAuthGuard)
