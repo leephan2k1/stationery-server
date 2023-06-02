@@ -10,7 +10,7 @@ import {
   Post,
   Res,
 } from '@nestjs/common';
-import { UseInterceptors } from '@nestjs/common/decorators';
+import { Req, UseGuards, UseInterceptors } from '@nestjs/common/decorators';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
 import { ApiMessage, BaseResponse } from 'src/common/response';
@@ -19,6 +19,12 @@ import { GetSupplierResponse } from './get-supplier.response';
 import { PatchSupplierRequest } from './patch-supplier.request';
 import { PostSupplierRequest } from './post-supplier.request';
 import { PostSupplierResponse } from './post-supplier.response';
+import { Roles } from 'src/common/decorators/roles.decorator';
+import { Permission, Role } from 'src/common/enums';
+import { RolesGuard } from 'src/guards/role.guard';
+import { Permissions } from 'src/common/decorators/permissions.decorator';
+import { PermissionsGuard } from 'src/guards/permission.guard';
+import { UserSessionRequest } from 'src/common/interfaces/userSession.interface';
 
 @ApiTags('suppliers')
 @Controller('suppliers')
@@ -33,11 +39,16 @@ export class SupplierController {
    * @returns
    */
   @Post()
+  @Roles(Role.ADMIN, Role.EMPLOYEE)
+  @UseGuards(RolesGuard)
+  @Permissions(Permission.CREATE_SUPPLIER)
+  @UseGuards(PermissionsGuard)
   @ApiOperation({ operationId: 'addSupplier' })
   @ApiResponse({ status: HttpStatus.CREATED, type: PostSupplierResponse })
   public async create(
     @Res() res: Response,
     @Body() requestBody: PostSupplierRequest,
+    @Req() req: UserSessionRequest,
   ) {
     const errs: ApiMessage[] = await this.supplierService.validateBodySupplier(
       requestBody,
@@ -47,7 +58,7 @@ export class SupplierController {
         .status(HttpStatus.BAD_REQUEST)
         .send(new BaseResponse(false, errs));
     }
-    const model = await this.supplierService.create(requestBody);
+    const model = await this.supplierService.create(requestBody, req.user.id);
     return res.status(HttpStatus.CREATED).send(PostSupplierResponse.of(model));
   }
 
@@ -60,11 +71,16 @@ export class SupplierController {
   }
 
   @Put(':id')
+  @Roles(Role.ADMIN, Role.EMPLOYEE)
+  @UseGuards(RolesGuard)
+  @Permissions(Permission.UPDATE_SUPPLIER)
+  @UseGuards(PermissionsGuard)
   @ApiResponse({ status: HttpStatus.OK, type: GetSupplierResponse })
   async update(
     @Param('id') id: string,
     @Body() updateSupplierDto: PatchSupplierRequest,
     @Res() res: Response,
+    @Req() req: UserSessionRequest,
   ) {
     const errs: ApiMessage[] = await this.supplierService.validateBodySupplier({
       name: updateSupplierDto.name,
@@ -76,12 +92,20 @@ export class SupplierController {
         .send(new BaseResponse(false, errs));
     }
 
-    const model = await this.supplierService.update(id, updateSupplierDto);
+    const model = await this.supplierService.update(
+      id,
+      updateSupplierDto,
+      req.user.id,
+    );
 
     return res.status(HttpStatus.OK).send(GetSupplierResponse.of(model));
   }
 
   @Delete(':id')
+  @Roles(Role.ADMIN, Role.EMPLOYEE)
+  @UseGuards(RolesGuard)
+  @Permissions(Permission.DELETE_SUPPLIER)
+  @UseGuards(PermissionsGuard)
   @ApiResponse({ status: HttpStatus.OK, type: GetSupplierResponse })
   async remove(@Param('id') id: string, @Res() res: Response) {
     const model = await this.supplierService.remove(id);

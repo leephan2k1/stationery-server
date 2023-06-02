@@ -15,6 +15,10 @@ export enum Permission {
   UPDATE_WAREHOUSE = 'update_warehouse',
   DELETE_WAREHOUSE = 'delete_warehouse',
 
+  CREATE_SUPPLIER = 'create_supplier',
+  UPDATE_SUPPLIER = 'update_supplier',
+  DELETE_SUPPLIER = 'delete_supplier',
+
   UPDATE_USER_PERMISSION = 'update_user_permission',
   DELETE_USER_PERMISSION = 'delete_user_permission',
 }

@@ -8,8 +8,12 @@ import { PostSupplierRequest } from 'src/controllers/supplier';
 export class SupplierService {
   constructor(private readonly supplierRepo: SupplierRepository) {}
 
-  async create(requestBody: PostSupplierRequest): Promise<SupplierModel> {
+  async create(
+    requestBody: PostSupplierRequest,
+    userId: string,
+  ): Promise<SupplierModel> {
     const supplierEntity = requestBody.createEntity();
+    supplierEntity.setCreatedBy(userId);
     const supplierModel = await this.supplierRepo.save(supplierEntity);
     return SupplierModel.fromEntity(supplierModel);
   }
@@ -55,8 +59,10 @@ export class SupplierService {
   async update(
     id: string,
     updateSupplierDto: PatchSupplierRequest,
+    userId: string,
   ): Promise<SupplierModel> {
     const supplierEntity = updateSupplierDto.createEntityWithoutId();
+    supplierEntity.setUpdatedBy(userId);
     const supplierModel = await this.supplierRepo.update(id, supplierEntity);
     return SupplierModel.fromEntity(supplierModel);
   }
