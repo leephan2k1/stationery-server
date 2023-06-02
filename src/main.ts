@@ -38,8 +38,6 @@ async function bootstrap() {
       store: sessionsStore,
     }),
   );
-  app.use(passport.initialize());
-  app.use(passport.session());
 
   const config = new DocumentBuilder()
     .setTitle('Stationery server')
@@ -56,6 +54,9 @@ async function bootstrap() {
       transform: true, // transform object to DTO class
     }),
   );
+
+  app.use(passport.initialize());
+  app.use(passport.session());
 
   await app.listen(PORT, () => {
     console.log(`server is listening at PORT: ${PORT}`);

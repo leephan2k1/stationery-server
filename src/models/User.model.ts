@@ -35,7 +35,10 @@ export class UserModel extends BaseModel {
 
     model.id = user._id.toString();
     model.email = user.email;
-    model.fullName = user.first_name + ' ' + user.last_name;
+
+    if (user.first_name && user.last_name) {
+      model.fullName = user.first_name + ' ' + user.last_name;
+    }
 
     if (user.contacts) {
       model.contacts = user.contacts.map((e) => ContactModel.fromEntity(e));

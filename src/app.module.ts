@@ -8,6 +8,9 @@ import { BrandModule } from './modules/brand.module';
 import { CategoryModule } from './modules/category.module';
 import { ProductModule } from './modules/product.module';
 import { WarehouseModule } from './modules/warehouse.module';
+import { AuthModule } from './modules/auth.module';
+import { UserModule } from './modules/user.module';
+import { PassportModule } from '@nestjs/passport';
 
 @Module({
   imports: [
@@ -21,11 +24,17 @@ import { WarehouseModule } from './modules/warehouse.module';
       }),
     }),
 
+    PassportModule.register({
+      session: true,
+    }),
+
     SupplierModule,
     BrandModule,
     CategoryModule,
     ProductModule,
     WarehouseModule,
+    AuthModule,
+    UserModule,
   ],
   controllers: [AppController],
   providers: [AppService],
