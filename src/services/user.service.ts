@@ -1,5 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Permission } from 'src/common/enums/permission.enum';
+import { GetUsersRequestQuery } from 'src/controllers/user/get-users.request';
 import { PostUserRequest } from 'src/controllers/user/post-user.request';
 import { PutUserPermissionRequest } from 'src/controllers/user/put-user-permission.request';
 import { UserModel } from 'src/models/User.model';
@@ -58,5 +59,19 @@ export class UserService {
     const model = await this.userRepo.updateUserPermissions(id, entity);
 
     return UserModel.fromEntity(model);
+  }
+
+  async findUsers(
+    queries: GetUsersRequestQuery,
+  ): Promise<{ models: UserModel[]; count: number }> {
+    if (!queries.limit) queries.limit = 10;
+    if (!queries.page) queries.page = 1;
+
+    const { users, count } = await this.userRepo.findAll(queries);
+
+    return {
+      models: users.map((e) => UserModel.fromEntity(e)),
+      count,
+    };
   }
 }
