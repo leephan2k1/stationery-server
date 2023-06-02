@@ -8,6 +8,8 @@ import {
   Put,
   Post,
   Res,
+  UseGuards,
+  Req,
 } from '@nestjs/common';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
@@ -17,6 +19,13 @@ import { PostBrandResponse } from './post-brand.response';
 import { ApiMessage, BaseResponse } from 'src/common/response';
 import { GetBrandResponse } from './get-brand.response';
 import { PutBrandRequest } from './put-brand.request';
+import { RolesGuard } from 'src/guards/role.guard';
+import { Roles } from 'src/common/decorators/roles.decorator';
+import { Role } from 'src/common/enums/role.enum';
+import { Permissions } from 'src/common/decorators/permissions.decorator';
+import { Permission } from 'src/common/enums/permission.enum';
+import { PermissionsGuard } from 'src/guards/permission.guard';
+import { UserSessionRequest } from 'src/common/interfaces/userSession.interface';
 
 @ApiTags('brands')
 @Controller('brands')
@@ -24,8 +33,16 @@ export class BrandController {
   constructor(private readonly brandService: BrandService) {}
 
   @Post()
+  @Roles(Role.ADMIN, Role.EMPLOYEE)
+  @UseGuards(RolesGuard)
+  @Permissions(Permission.CREATE_BRAND)
+  @UseGuards(PermissionsGuard)
   @ApiResponse({ status: HttpStatus.CREATED, type: PostBrandResponse })
-  async create(@Body() reqBody: PostBrandRequest, @Res() res: Response) {
+  async create(
+    @Body() reqBody: PostBrandRequest,
+    @Res() res: Response,
+    @Req() req: UserSessionRequest,
+  ) {
     const errs: ApiMessage[] = await this.brandService.validatePostBody(
       reqBody,
     );
@@ -36,7 +53,7 @@ export class BrandController {
         .send(new BaseResponse(false, errs));
     }
 
-    const model = await this.brandService.create(reqBody);
+    const model = await this.brandService.create(reqBody, req.user.id);
 
     return res.status(HttpStatus.CREATED).send(PostBrandResponse.of(model));
   }

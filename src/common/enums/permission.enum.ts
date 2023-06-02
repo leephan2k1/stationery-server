@@ -7,6 +7,14 @@ export enum Permission {
   UPDATE_CATEGORY = 'update_category',
   DELETE_CATEGORY = 'delete_category',
 
+  CREATE_BRAND = 'create_brand',
+  UPDATE_BRAND = 'update_brand',
+  DELETE_BRAND = 'delete_brand',
+
+  CREATE_WAREHOUSE = 'create_warehouse',
+  UPDATE_WAREHOUSE = 'update_warehouse',
+  DELETE_WAREHOUSE = 'delete_warehouse',
+
   UPDATE_USER_PERMISSION = 'update_user_permission',
   DELETE_USER_PERMISSION = 'delete_user_permission',
 }

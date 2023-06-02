@@ -15,7 +15,7 @@ import { Response } from 'express';
 import { Role } from 'src/common/enums/role.enum';
 import { RolesGuard } from 'src/guards/role.guard';
 import { UserService } from 'src/services/user.service';
-import { Roles } from 'src/utils/roles.decorator';
+import { Roles } from 'src/common/decorators/roles.decorator';
 import { GetUserResponse, GetUsersResponse } from './get-user.response';
 import { GetUsersRequestQuery } from './get-users.request';
 import { PutUserPermissionRequest } from './put-user-permission.request';

@@ -9,8 +9,9 @@ import isEmptyObject from 'src/utils/checkEmptyObject';
 export class BrandService {
   constructor(private readonly brandRepo: BrandRepository) {}
 
-  async create(reqBody: PostBrandRequest): Promise<BrandModel> {
+  async create(reqBody: PostBrandRequest, userId: string): Promise<BrandModel> {
     const brandEntity = reqBody.createEntity();
+    brandEntity.setCreatedBy(userId);
     const brandModel = await this.brandRepo.save(brandEntity);
     return BrandModel.fromEntity(brandModel);
   }
