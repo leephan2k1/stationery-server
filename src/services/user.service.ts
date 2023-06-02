@@ -1,5 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { Permission } from 'src/common/enums/permission.enum';
 import { PostUserRequest } from 'src/controllers/user/post-user.request';
+import { PutUserPermissionRequest } from 'src/controllers/user/put-user-permission.request';
 import { UserModel } from 'src/models/User.model';
 import { UserRepository } from 'src/repositories/user.repository';
 import { decodePassword } from 'src/utils/bcrypt';
@@ -44,6 +46,16 @@ export class UserService {
   async create(user: PostUserRequest): Promise<UserModel> {
     const entity = user.createEntity({ withoutId: false });
     const model = await this.userRepo.save(entity);
+
+    return UserModel.fromEntity(model);
+  }
+
+  async updatePermission(
+    id: string,
+    reqBody: PutUserPermissionRequest,
+  ): Promise<UserModel> {
+    const entity = reqBody.createEntity();
+    const model = await this.userRepo.updateUserPermissions(id, entity);
 
     return UserModel.fromEntity(model);
   }
