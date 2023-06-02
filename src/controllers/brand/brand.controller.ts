@@ -67,11 +67,16 @@ export class BrandController {
   }
 
   @Put(':id')
+  @Roles(Role.ADMIN, Role.EMPLOYEE)
+  @UseGuards(RolesGuard)
+  @Permissions(Permission.CREATE_BRAND)
+  @UseGuards(PermissionsGuard)
   @ApiResponse({ status: HttpStatus.OK, type: GetBrandResponse })
   async update(
     @Param('id') id: string,
     @Body() reqBody: PutBrandRequest,
     @Res() res: Response,
+    @Req() req: UserSessionRequest,
   ) {
     const errs: ApiMessage[] = await this.brandService.validateUpdateBody(
       reqBody,
@@ -83,7 +88,7 @@ export class BrandController {
         .send(new BaseResponse(false, errs));
     }
 
-    const model = await this.brandService.update(id, reqBody);
+    const model = await this.brandService.update(id, reqBody, req.user.id);
 
     return res.status(HttpStatus.OK).send(GetBrandResponse.of(model));
   }

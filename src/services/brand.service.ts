@@ -22,8 +22,13 @@ export class BrandService {
     return BrandModel.fromEntity(brandModel);
   }
 
-  async update(id: string, reqBody: PutBrandRequest): Promise<BrandModel> {
+  async update(
+    id: string,
+    reqBody: PutBrandRequest,
+    userId: string,
+  ): Promise<BrandModel> {
     const brandEntity = reqBody.createEntityWithoutId();
+    brandEntity.setUpdatedBy(userId);
     const brandModel = await this.brandRepo.updateById(id, brandEntity);
     return BrandModel.fromEntity(brandModel);
   }
