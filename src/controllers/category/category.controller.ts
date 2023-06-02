@@ -5,19 +5,26 @@ import {
   Get,
   HttpStatus,
   Param,
-  Patch,
   Post,
-  Res,
   Put,
+  Req,
+  Res,
+  UseGuards,
 } from '@nestjs/common';
-import { CategoryService } from '../../services/category.service';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
-import { PostCategoryRequest } from './post-category.request';
 import { Response } from 'express';
+import { Roles } from 'src/common/decorators/roles.decorator';
+import { Permission, Role } from 'src/common/enums';
 import { ApiMessage, BaseResponse } from 'src/common/response';
-import { PostCategoryResponse } from './post-category.response';
+import { CategoryService } from '../../services/category.service';
 import { GetCategoryResponse } from './get-category.response';
+import { PostCategoryRequest } from './post-category.request';
+import { PostCategoryResponse } from './post-category.response';
 import { PutCategoryRequest } from './put-category.request';
+import { RolesGuard } from 'src/guards/role.guard';
+import { Permissions } from 'src/common/decorators/permissions.decorator';
+import { PermissionsGuard } from 'src/guards/permission.guard';
+import { UserSessionRequest } from 'src/common/interfaces/userSession.interface';
 
 @ApiTags('categories')
 @Controller('categories')
@@ -25,8 +32,16 @@ export class CategoryController {
   constructor(private readonly categoryService: CategoryService) {}
 
   @Post()
+  @Roles(Role.ADMIN, Role.EMPLOYEE)
+  @UseGuards(RolesGuard)
+  @Permissions(Permission.CREATE_CATEGORY)
+  @UseGuards(PermissionsGuard)
   @ApiResponse({ status: HttpStatus.CREATED, type: PostCategoryResponse })
-  async create(@Body() reqBody: PostCategoryRequest, @Res() res: Response) {
+  async create(
+    @Body() reqBody: PostCategoryRequest,
+    @Res() res: Response,
+    @Req() req: UserSessionRequest,
+  ) {
     const errs: ApiMessage[] = await this.categoryService.validateBody({
       name: reqBody.name,
       parentCategory: reqBody?.parentCategory,
@@ -38,7 +53,7 @@ export class CategoryController {
         .send(new BaseResponse(false, errs));
     }
 
-    const model = await this.categoryService.create(reqBody);
+    const model = await this.categoryService.create(reqBody, req.user.id);
 
     return res.status(HttpStatus.CREATED).send(PostCategoryResponse.of(model));
   }
@@ -52,11 +67,16 @@ export class CategoryController {
   }
 
   @Put(':slug')
+  @Roles(Role.ADMIN, Role.EMPLOYEE)
+  @UseGuards(RolesGuard)
+  @Permissions(Permission.UPDATE_CATEGORY)
+  @UseGuards(PermissionsGuard)
   @ApiResponse({ status: HttpStatus.OK, type: GetCategoryResponse })
   async update(
     @Param('slug') slug: string,
     @Body() reqBody: PutCategoryRequest,
     @Res() res: Response,
+    @Req() req: UserSessionRequest,
   ) {
     const errs: ApiMessage[] = await this.categoryService.validateBody({
       name: reqBody.name,
@@ -69,12 +89,16 @@ export class CategoryController {
         .send(new BaseResponse(false, errs));
     }
 
-    const model = await this.categoryService.update(slug, reqBody);
+    const model = await this.categoryService.update(slug, reqBody, req.user.id);
 
     return res.status(HttpStatus.OK).send(GetCategoryResponse.of(model));
   }
 
   @Delete(':slug')
+  @Roles(Role.ADMIN, Role.EMPLOYEE)
+  @UseGuards(RolesGuard)
+  @Permissions(Permission.DELETE_CATEGORY)
+  @UseGuards(PermissionsGuard)
   @ApiResponse({ status: HttpStatus.OK, type: GetCategoryResponse })
   async remove(@Param('slug') slug: string, @Res() res: Response) {
     const model = await this.categoryService.delete(slug);

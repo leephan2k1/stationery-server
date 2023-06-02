@@ -8,8 +8,12 @@ import { CategoryRepository } from 'src/repositories/category.repository';
 export class CategoryService {
   constructor(private readonly categoryRepo: CategoryRepository) {}
 
-  async create(reqBody: PostCategoryRequest): Promise<CategoryModel> {
+  async create(
+    reqBody: PostCategoryRequest,
+    userId: string,
+  ): Promise<CategoryModel> {
     const entity = reqBody.createEntity();
+    entity.setCreatedBy(userId);
     const model = await this.categoryRepo.save(entity);
 
     return CategoryModel.fromEntity(model);
@@ -24,8 +28,10 @@ export class CategoryService {
   async update(
     slug: string,
     reqBody: PutCategoryRequest,
+    userId: string,
   ): Promise<CategoryModel> {
     const entity = reqBody.createEntityWithoutId();
+    entity.setUpdatedBy(userId);
     const model = await this.categoryRepo.updateBySlug(slug, entity);
 
     return CategoryModel.fromEntity(model);
