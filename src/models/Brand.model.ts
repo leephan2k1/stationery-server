@@ -16,6 +16,9 @@ export class BrandModel extends CreatorModel {
     const model = new BrandModel();
     model.id = brand._id.toString();
     model.name = brand.name;
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    //@ts-ignore
+    if (brand.createdBy) model.createdBy = brand.createdBy;
 
     return model;
   }

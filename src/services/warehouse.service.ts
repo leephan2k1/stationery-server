@@ -7,8 +7,12 @@ import { WarehouseRepository } from 'src/repositories/warehouse.repository';
 export class WarehouseService {
   constructor(private readonly warehouseRepo: WarehouseRepository) {}
 
-  async create(reqBody: PostWarehouseRequest): Promise<WarehouseModel> {
+  async create(
+    reqBody: PostWarehouseRequest,
+    userId: string,
+  ): Promise<WarehouseModel> {
     const entity = reqBody.createEntity({ withoutId: false });
+    entity.setCreatedBy(userId);
     const model = await this.warehouseRepo.save(entity);
 
     return WarehouseModel.fromEntity(model);
@@ -26,8 +30,10 @@ export class WarehouseService {
   async update(
     id: string,
     reqBody: PostWarehouseRequest,
+    userId: string,
   ): Promise<WarehouseModel> {
     const entity = reqBody.createEntity({ withoutId: true });
+    entity.setUpdatedBy(userId);
     const model = await this.warehouseRepo.updateWarehouseById(id, entity);
 
     return WarehouseModel.fromEntity(model);

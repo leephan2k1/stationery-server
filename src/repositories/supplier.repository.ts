@@ -5,9 +5,8 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import mongoose, { Model } from 'mongoose';
 import { Supplier, SupplierDocument } from 'src/schemas/Supplier.schema';
-import { ObjectId } from 'mongodb';
 
 @Injectable()
 export class SupplierRepository {
@@ -21,15 +20,21 @@ export class SupplierRepository {
   }
 
   async update(id: string, supplier: Supplier): Promise<Supplier> {
-    return this.model.findByIdAndUpdate(new ObjectId(id), supplier, {
-      new: true,
-    });
+    return this.model.findByIdAndUpdate(
+      new mongoose.Types.ObjectId(id),
+      supplier,
+      {
+        new: true,
+      },
+    );
   }
 
   async findById(id: string): Promise<Supplier> {
     let supplier;
     try {
-      supplier = await this.model.findById(new ObjectId(id)).exec();
+      supplier = await this.model
+        .findById(new mongoose.Types.ObjectId(id))
+        .exec();
     } catch (error) {
       throw new BadRequestException(error);
     }
@@ -55,7 +60,9 @@ export class SupplierRepository {
   async delete(id: string): Promise<Supplier> {
     let supplier;
     try {
-      supplier = await this.model.findByIdAndDelete(new ObjectId(id)).exec();
+      supplier = await this.model
+        .findByIdAndDelete(new mongoose.Types.ObjectId(id))
+        .exec();
     } catch (error) {
       throw new BadRequestException(error);
     }

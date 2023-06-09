@@ -4,9 +4,8 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import mongoose, { Model } from 'mongoose';
 import { Warehouse, WarehouseDocument } from 'src/schemas/Warehouse.schema';
-import { ObjectId } from 'mongodb';
 
 @Injectable()
 export class WarehouseRepository {
@@ -22,7 +21,9 @@ export class WarehouseRepository {
   async findWarehouseById(id: string) {
     let warehouse;
     try {
-      warehouse = await this.model.findById(new ObjectId(id)).exec();
+      warehouse = await this.model
+        .findById(new mongoose.Types.ObjectId(id))
+        .exec();
     } catch (error) {
       throw new BadRequestException(error);
     }
@@ -37,7 +38,9 @@ export class WarehouseRepository {
   async deleteWarehouseById(id: string) {
     let warehouse;
     try {
-      warehouse = await this.model.findByIdAndDelete(new ObjectId(id)).exec();
+      warehouse = await this.model
+        .findByIdAndDelete(new mongoose.Types.ObjectId(id))
+        .exec();
     } catch (error) {
       throw new BadRequestException(error);
     }
@@ -57,7 +60,7 @@ export class WarehouseRepository {
     try {
       warehouse = await this.model
         .findByIdAndUpdate(
-          new ObjectId(id),
+          new mongoose.Types.ObjectId(id),
           {
             $addToSet: { products: { $each: products } },
             name,

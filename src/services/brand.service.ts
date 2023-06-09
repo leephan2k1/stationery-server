@@ -9,8 +9,9 @@ import isEmptyObject from 'src/utils/checkEmptyObject';
 export class BrandService {
   constructor(private readonly brandRepo: BrandRepository) {}
 
-  async create(reqBody: PostBrandRequest): Promise<BrandModel> {
+  async create(reqBody: PostBrandRequest, userId: string): Promise<BrandModel> {
     const brandEntity = reqBody.createEntity();
+    brandEntity.setCreatedBy(userId);
     const brandModel = await this.brandRepo.save(brandEntity);
     return BrandModel.fromEntity(brandModel);
   }
@@ -21,8 +22,13 @@ export class BrandService {
     return BrandModel.fromEntity(brandModel);
   }
 
-  async update(id: string, reqBody: PutBrandRequest): Promise<BrandModel> {
+  async update(
+    id: string,
+    reqBody: PutBrandRequest,
+    userId: string,
+  ): Promise<BrandModel> {
     const brandEntity = reqBody.createEntityWithoutId();
+    brandEntity.setUpdatedBy(userId);
     const brandModel = await this.brandRepo.updateById(id, brandEntity);
     return BrandModel.fromEntity(brandModel);
   }

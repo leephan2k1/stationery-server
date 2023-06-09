@@ -1,5 +1,4 @@
-import { ObjectId } from 'mongodb';
-import { Model } from 'mongoose';
+import mongoose, { Model } from 'mongoose';
 import { Brand, BrandDocument } from 'src/schemas/Brand.schema';
 
 import {
@@ -23,7 +22,7 @@ export class BrandRepository {
     let brand;
 
     try {
-      brand = await this.model.findById(new ObjectId(id)).exec();
+      brand = await this.model.findById(new mongoose.Types.ObjectId(id)).exec();
     } catch (error) {
       throw new BadRequestException(error);
     }
@@ -36,15 +35,21 @@ export class BrandRepository {
   }
 
   async updateById(id: string, brand: Brand): Promise<Brand> {
-    return this.model.findByIdAndUpdate(new ObjectId(id), brand, {
-      new: true,
-    });
+    return this.model.findByIdAndUpdate(
+      new mongoose.Types.ObjectId(id),
+      brand,
+      {
+        new: true,
+      },
+    );
   }
 
   async deleteById(id: string): Promise<Brand> {
     let brand;
     try {
-      brand = await this.model.findByIdAndDelete(new ObjectId(id)).exec();
+      brand = await this.model
+        .findByIdAndDelete(new mongoose.Types.ObjectId(id))
+        .exec();
     } catch (error) {
       throw new BadRequestException(error);
     }
