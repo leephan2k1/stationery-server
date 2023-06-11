@@ -23,6 +23,25 @@ import { PostUserResponse } from '../user/post-user.response';
 export class AuthController {
   constructor(private readonly userService: UserService) {}
 
+  @Get('sign-out')
+  @UseGuards(AuthenticatedGuard)
+  @ApiResponse({ status: HttpStatus.OK, type: BaseResponse })
+  async handleSignOut(@Req() req: UserSessionRequest, @Res() res: Response) {
+    //@ts-ignore
+    req.logOut((err) => {
+      if (err) {
+        console.error('err:: ', err);
+      }
+      //@ts-ignore
+      req?.session?.destroy((err) => {
+        if (err) console.error(err);
+      });
+
+      res.clearCookie('connect.sid');
+      return res.status(200).json({ ok: true });
+    });
+  }
+
   @Get('status')
   @UseGuards(AuthenticatedGuard)
   @ApiResponse({ status: HttpStatus.OK, type: GetUserResponse })
