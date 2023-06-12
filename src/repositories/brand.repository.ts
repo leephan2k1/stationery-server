@@ -4,9 +4,11 @@ import { Brand, BrandDocument } from 'src/schemas/Brand.schema';
 import {
   BadRequestException,
   Injectable,
+  InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
+import { GetBrandsQuery } from 'src/controllers/brand/get-brand.query';
 
 @Injectable()
 export class BrandRepository {
@@ -16,6 +18,28 @@ export class BrandRepository {
 
   async save(brand: Brand): Promise<Brand> {
     return this.model.create(brand);
+  }
+
+  async findAll({
+    limit,
+    page,
+  }: GetBrandsQuery): Promise<{ brands: Brand[]; count: number }> {
+    let brands, count;
+    try {
+      [brands, count] = await Promise.all([
+        await this.model
+          .find({})
+          .limit(limit)
+          .skip(limit * (page - 1))
+          .exec(),
+
+        this.model.count(),
+      ]);
+    } catch (error) {
+      throw new InternalServerErrorException(error);
+    }
+
+    return { brands, count };
   }
 
   async findById(id: string): Promise<Brand> {

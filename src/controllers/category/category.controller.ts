@@ -7,6 +7,7 @@ import {
   Param,
   Post,
   Put,
+  Query,
   Req,
   Res,
   UseGuards,
@@ -17,7 +18,10 @@ import { Roles } from 'src/common/decorators/roles.decorator';
 import { Permission, Role } from 'src/common/enums';
 import { ApiMessage, BaseResponse } from 'src/common/response';
 import { CategoryService } from '../../services/category.service';
-import { GetCategoryResponse } from './get-category.response';
+import {
+  GetCategoriesResponse,
+  GetCategoryResponse,
+} from './get-category.response';
 import { PostCategoryRequest } from './post-category.request';
 import { PostCategoryResponse } from './post-category.response';
 import { PutCategoryRequest } from './put-category.request';
@@ -25,11 +29,25 @@ import { RolesGuard } from 'src/guards/role.guard';
 import { Permissions } from 'src/common/decorators/permissions.decorator';
 import { PermissionsGuard } from 'src/guards/permission.guard';
 import { UserSessionRequest } from 'src/common/interfaces/userSession.interface';
+import { GetCategoriesQuery } from './get-category.query';
 
 @ApiTags('categories')
 @Controller('categories')
 export class CategoryController {
   constructor(private readonly categoryService: CategoryService) {}
+
+  @Get()
+  @ApiResponse({ status: HttpStatus.OK, type: GetCategoriesResponse })
+  async getAllCategory(
+    @Query() queries: GetCategoriesQuery,
+    @Res() res: Response,
+  ) {
+    const { count, suppliers } = await this.categoryService.findMany(queries);
+
+    return res
+      .status(HttpStatus.OK)
+      .send(GetCategoriesResponse.of(suppliers, count));
+  }
 
   @Post()
   @Roles(Role.ADMIN, Role.EMPLOYEE)

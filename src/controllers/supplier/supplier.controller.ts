@@ -6,31 +6,53 @@ import {
   Get,
   HttpStatus,
   Param,
-  Put,
   Post,
+  Put,
   Res,
 } from '@nestjs/common';
-import { Req, UseGuards, UseInterceptors } from '@nestjs/common/decorators';
+import {
+  Query,
+  Req,
+  UseGuards,
+  UseInterceptors,
+} from '@nestjs/common/decorators';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
+import { Permissions } from 'src/common/decorators/permissions.decorator';
+import { Roles } from 'src/common/decorators/roles.decorator';
+import { Permission, Role } from 'src/common/enums';
+import { UserSessionRequest } from 'src/common/interfaces/userSession.interface';
 import { ApiMessage, BaseResponse } from 'src/common/response';
+import { PermissionsGuard } from 'src/guards/permission.guard';
+import { RolesGuard } from 'src/guards/role.guard';
 import { SupplierService } from 'src/services/supplier.service';
-import { GetSupplierResponse } from './get-supplier.response';
+import { GetSupplierQuery } from './get-supplier.query';
+import {
+  GetSupplierResponse,
+  GetSuppliersResponse,
+} from './get-supplier.response';
 import { PatchSupplierRequest } from './patch-supplier.request';
 import { PostSupplierRequest } from './post-supplier.request';
 import { PostSupplierResponse } from './post-supplier.response';
-import { Roles } from 'src/common/decorators/roles.decorator';
-import { Permission, Role } from 'src/common/enums';
-import { RolesGuard } from 'src/guards/role.guard';
-import { Permissions } from 'src/common/decorators/permissions.decorator';
-import { PermissionsGuard } from 'src/guards/permission.guard';
-import { UserSessionRequest } from 'src/common/interfaces/userSession.interface';
 
 @ApiTags('suppliers')
 @Controller('suppliers')
 @UseInterceptors(ClassSerializerInterceptor)
 export class SupplierController {
   constructor(private readonly supplierService: SupplierService) {}
+
+  @Get()
+  @ApiResponse({ status: HttpStatus.OK, type: GetSuppliersResponse })
+  async getAllCategory(
+    @Query() queries: GetSupplierQuery,
+    @Res() res: Response,
+  ) {
+    const { count, suppliers } = await this.supplierService.findMany(queries);
+
+    return res
+      .status(HttpStatus.OK)
+      .send(GetSuppliersResponse.of(suppliers, count));
+  }
 
   /**
    * Add new supplier

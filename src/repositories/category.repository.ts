@@ -1,11 +1,13 @@
 import {
   BadRequestException,
   Injectable,
+  InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import * as slug from 'slug';
+import { GetCategoriesQuery } from 'src/controllers/category/get-category.query';
 import { Category, CategoryDocument } from 'src/schemas/Category.schema';
 
 @Injectable()
@@ -28,6 +30,28 @@ export class CategoryRepository {
     }
 
     return newModel;
+  }
+
+  async findAll({
+    limit,
+    page,
+  }: GetCategoriesQuery): Promise<{ categories: Category[]; count: number }> {
+    let categories, count;
+    try {
+      [categories, count] = await Promise.all([
+        await this.model
+          .find({})
+          .limit(limit)
+          .skip(limit * (page - 1))
+          .exec(),
+
+        this.model.count(),
+      ]);
+    } catch (error) {
+      throw new InternalServerErrorException(error);
+    }
+
+    return { categories, count };
   }
 
   async findBySlug(slug: string) {

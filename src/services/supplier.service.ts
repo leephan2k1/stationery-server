@@ -3,6 +3,7 @@ import { PatchSupplierRequest } from 'src/controllers/supplier/patch-supplier.re
 import { SupplierRepository } from 'src/repositories/supplier.repository';
 import { SupplierModel } from 'src/models/Supplier.model';
 import { PostSupplierRequest } from 'src/controllers/supplier';
+import { GetSupplierQuery } from 'src/controllers/supplier/get-supplier.query';
 
 @Injectable()
 export class SupplierService {
@@ -54,6 +55,18 @@ export class SupplierService {
     const model = await this.supplierRepo.findById(id);
 
     return SupplierModel.fromEntity(model);
+  }
+
+  async findMany(queries: GetSupplierQuery) {
+    if (!queries.limit) queries.limit = 0;
+    if (!queries.page) queries.page = 1;
+
+    const { suppliers, count } = await this.supplierRepo.findAll(queries);
+
+    return {
+      suppliers: suppliers.map((model) => SupplierModel.fromEntity(model)),
+      count,
+    };
   }
 
   async update(

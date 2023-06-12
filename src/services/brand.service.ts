@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { GetBrandsQuery } from 'src/controllers/brand/get-brand.query';
 import { PostBrandRequest } from 'src/controllers/brand/post-brand.request';
 import { PutBrandRequest } from 'src/controllers/brand/put-brand.request';
 import { BrandModel } from 'src/models/Brand.model';
@@ -14,6 +15,18 @@ export class BrandService {
     brandEntity.setCreatedBy(userId);
     const brandModel = await this.brandRepo.save(brandEntity);
     return BrandModel.fromEntity(brandModel);
+  }
+
+  async findMany(queries: GetBrandsQuery) {
+    if (!queries.limit) queries.limit = 0;
+    if (!queries.page) queries.page = 1;
+
+    const { brands, count } = await this.brandRepo.findAll(queries);
+
+    return {
+      brands: brands.map((model) => BrandModel.fromEntity(model)),
+      count,
+    };
   }
 
   async findOne(id: string): Promise<BrandModel> {
