@@ -37,7 +37,6 @@ import { PostSupplierResponse } from './post-supplier.response';
 
 @ApiTags('suppliers')
 @Controller('suppliers')
-@UseInterceptors(ClassSerializerInterceptor)
 export class SupplierController {
   constructor(private readonly supplierService: SupplierService) {}
 
