@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { GetCategoriesQuery } from 'src/controllers/category/get-category.query';
 import { PostCategoryRequest } from 'src/controllers/category/post-category.request';
 import { PutCategoryRequest } from 'src/controllers/category/put-category.request';
 import { CategoryModel } from 'src/models/Category.model';
@@ -17,6 +18,18 @@ export class CategoryService {
     const model = await this.categoryRepo.save(entity);
 
     return CategoryModel.fromEntity(model);
+  }
+
+  async findMany(queries: GetCategoriesQuery) {
+    if (!queries.limit) queries.limit = 0;
+    if (!queries.page) queries.page = 1;
+
+    const { categories, count } = await this.categoryRepo.findAll(queries);
+
+    return {
+      suppliers: categories.map((model) => CategoryModel.fromEntity(model)),
+      count,
+    };
   }
 
   async findOne(slug: string): Promise<CategoryModel> {

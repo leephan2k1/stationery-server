@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import mongoose, { Model } from 'mongoose';
+import { GetSupplierQuery } from 'src/controllers/supplier/get-supplier.query';
 import { Supplier, SupplierDocument } from 'src/schemas/Supplier.schema';
 
 @Injectable()
@@ -46,15 +47,26 @@ export class SupplierRepository {
     return supplier;
   }
 
-  async findAll(): Promise<Supplier[]> {
-    let suppliers;
+  async findAll({
+    limit,
+    page,
+  }: GetSupplierQuery): Promise<{ suppliers: Supplier[]; count: number }> {
+    let suppliers, count;
     try {
-      suppliers = await this.model.find().exec();
+      [suppliers, count] = await Promise.all([
+        await this.model
+          .find({})
+          .limit(limit)
+          .skip(limit * (page - 1))
+          .exec(),
+
+        this.model.count(),
+      ]);
     } catch (error) {
       throw new InternalServerErrorException(error);
     }
 
-    return suppliers;
+    return { suppliers, count };
   }
 
   async delete(id: string): Promise<Supplier> {
