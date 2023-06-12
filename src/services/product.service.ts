@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PostProductRequest } from 'src/controllers/product';
+import { GetProductsQuery } from 'src/controllers/product/get-products.query';
 import { ProductModel } from 'src/models/Product.model';
 import { ProductRepository } from 'src/repositories/product.repository';
 
@@ -18,8 +19,17 @@ export class ProductService {
     return ProductModel.fromEntity(model);
   }
 
-  findAll() {
-    return `This action returns all product`;
+  async findMany(queries: GetProductsQuery) {
+    if (!queries.limit) queries.limit = 0;
+    if (!queries.page) queries.page = 1;
+    if (!queries.sort) queries.sort = 'desc';
+
+    const { products, count } = await this.prodRepo.findAll(queries);
+
+    return {
+      products: products.map((model) => ProductModel.fromEntity(model)),
+      count,
+    };
   }
 
   async findOne(slug: string): Promise<ProductModel> {
@@ -82,16 +92,16 @@ export class ProductService {
     if (!brand) {
       errs.push('brand is missing');
     }
-    if (!discount_percent) {
+    if (discount_percent === undefined) {
       errs.push('discount_percent is missing');
     }
     if (!description) {
       errs.push('description is missing');
     }
-    if (!weight) {
+    if (weight === undefined) {
       errs.push('weight is missing');
     }
-    if (!price) {
+    if (price === undefined) {
       errs.push('price is missing');
     }
 

@@ -7,6 +7,7 @@ import {
   Param,
   Post,
   Put,
+  Query,
   Req,
   Res,
   UseGuards,
@@ -19,9 +20,15 @@ import { Permission, Role } from 'src/common/enums';
 import { ApiMessage, BaseResponse } from 'src/common/response';
 import { PermissionsGuard } from 'src/guards/permission.guard';
 import { RolesGuard } from 'src/guards/role.guard';
-import { GetProductResponse, PostProductRequest, PostProductResponse } from '.';
+import {
+  GetProductResponse,
+  GetProductsResponse,
+  PostProductRequest,
+  PostProductResponse,
+} from '.';
 import { ProductService } from '../../services/product.service';
 import { UserSessionRequest } from 'src/common/interfaces/userSession.interface';
+import { GetProductsQuery } from './get-products.query';
 
 @ApiTags('products')
 @Controller('products')
@@ -55,8 +62,13 @@ export class ProductController {
   }
 
   @Get()
-  findAll() {
-    return this.productService.findAll();
+  @ApiResponse({ status: HttpStatus.OK, type: GetProductsResponse })
+  async findAll(@Query() queries: GetProductsQuery, @Res() res: Response) {
+    const { count, products } = await this.productService.findMany(queries);
+
+    return res
+      .status(HttpStatus.OK)
+      .send(GetProductsResponse.of(products, count));
   }
 
   @Get(':slug')

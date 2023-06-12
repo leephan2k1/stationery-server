@@ -6,4 +6,7 @@ export abstract class BaseQuery {
 
   @ApiProperty()
   page?: number;
+
+  @ApiProperty()
+  sort?: 'desc' | 'asc';
 }

@@ -5,8 +5,10 @@ import { Product, ProductDocument } from 'src/schemas/Product.schema';
 import * as slug from 'slug';
 import {
   BadRequestException,
+  InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common/exceptions';
+import { GetProductsQuery } from 'src/controllers/product/get-products.query';
 
 @Injectable()
 export class ProductRepository {
@@ -20,6 +22,29 @@ export class ProductRepository {
       product_slug: slug(reqBody.name),
       sku: slug(reqBody.name),
     });
+  }
+
+  async findAll({
+    sort,
+    limit,
+    page,
+  }: GetProductsQuery): Promise<{ products: Product[]; count: number }> {
+    let products, count;
+    try {
+      [products, count] = await Promise.all([
+        await this.model
+          .find({}, null, { sort: { createdAt: sort } })
+          .limit(limit)
+          .skip(limit * (page - 1))
+          .exec(),
+
+        this.model.count(),
+      ]);
+    } catch (error) {
+      throw new InternalServerErrorException(error);
+    }
+
+    return { products, count };
   }
 
   async findProdBySlug(product_slug: string): Promise<Product> {
