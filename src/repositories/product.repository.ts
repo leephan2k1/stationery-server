@@ -25,15 +25,23 @@ export class ProductRepository {
   }
 
   async findAll({
+    name,
     sort,
     limit,
     page,
   }: GetProductsQuery): Promise<{ products: Product[]; count: number }> {
     let products, count;
+    const conditions = new Map();
+
+    if (name) conditions.set('name', { $regex: `^${name}`, $options: 'i' });
+    const objConditions = Object.fromEntries(conditions);
+
     try {
       [products, count] = await Promise.all([
         await this.model
-          .find({}, null, { sort: { createdAt: sort } })
+          .find(objConditions, null, {
+            sort: { createdAt: sort },
+          })
           .populate({ path: 'category', select: ['name'] })
           .populate({ path: 'supplier', select: ['name'] })
           .populate({ path: 'brand', select: ['name'] })
@@ -41,7 +49,7 @@ export class ProductRepository {
           .skip(limit * (page - 1))
           .exec(),
 
-        this.model.count(),
+        this.model.count(objConditions),
       ]);
     } catch (error) {
       throw new InternalServerErrorException(error);
