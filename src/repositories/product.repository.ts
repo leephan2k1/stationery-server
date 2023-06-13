@@ -34,6 +34,9 @@ export class ProductRepository {
       [products, count] = await Promise.all([
         await this.model
           .find({}, null, { sort: { createdAt: sort } })
+          .populate({ path: 'category', select: ['name'] })
+          .populate({ path: 'supplier', select: ['name'] })
+          .populate({ path: 'brand', select: ['name'] })
           .limit(limit)
           .skip(limit * (page - 1))
           .exec(),

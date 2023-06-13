@@ -16,7 +16,7 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
     const reqBody = new PostUserRequest(email, password);
     const { status, user } = await this.authService.validateUser(reqBody);
 
-    if (!user && !status) {
+    if (!user || !status) {
       throw new UnauthorizedException('Wrong password');
     }
 
