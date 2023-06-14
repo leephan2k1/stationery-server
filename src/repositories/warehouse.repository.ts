@@ -1,10 +1,12 @@
 import {
   BadRequestException,
   Injectable,
+  InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import mongoose, { Model } from 'mongoose';
+import { GetWarehouseQuery } from 'src/controllers/warehouse/get-warehouse.query';
 import { Warehouse, WarehouseDocument } from 'src/schemas/Warehouse.schema';
 
 @Injectable()
@@ -16,6 +18,37 @@ export class WarehouseRepository {
 
   async save(reqBody: Warehouse): Promise<Warehouse> {
     return this.model.create(reqBody);
+  }
+
+  async findAll({
+    name,
+    sort,
+    limit,
+    page,
+  }: GetWarehouseQuery): Promise<{ warehouses: Warehouse[]; count: number }> {
+    let warehouses, count;
+    const conditions = new Map();
+
+    if (name) conditions.set('name', { $regex: name, $options: 'i' });
+    const objConditions = Object.fromEntries(conditions);
+
+    try {
+      [warehouses, count] = await Promise.all([
+        await this.model
+          .find(objConditions, null, {
+            sort: { createdAt: sort },
+          })
+          .limit(limit)
+          .skip(limit * (page - 1))
+          .exec(),
+
+        this.model.count(objConditions),
+      ]);
+    } catch (error) {
+      throw new InternalServerErrorException(error);
+    }
+
+    return { warehouses, count };
   }
 
   async findWarehouseById(id: string) {

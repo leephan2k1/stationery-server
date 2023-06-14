@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { GetWarehouseQuery } from 'src/controllers/warehouse/get-warehouse.query';
 import { PostWarehouseRequest } from 'src/controllers/warehouse/post-warehouse.request';
 import { WarehouseModel } from 'src/models/Warehouse.model';
 import { WarehouseRepository } from 'src/repositories/warehouse.repository';
@@ -18,10 +19,17 @@ export class WarehouseService {
     return WarehouseModel.fromEntity(model);
   }
 
-  findAll() {
-    return `This action returns all warehouse`;
-  }
+  async findMany(queries: GetWarehouseQuery) {
+    if (!queries.limit) queries.limit = 0;
+    if (!queries.page) queries.page = 1;
 
+    const { warehouses, count } = await this.warehouseRepo.findAll(queries);
+
+    return {
+      warehouses: warehouses.map((model) => WarehouseModel.fromEntity(model)),
+      count,
+    };
+  }
   async findOne(id: string): Promise<WarehouseModel> {
     const model = await this.warehouseRepo.findWarehouseById(id);
     return WarehouseModel.fromEntity(model);

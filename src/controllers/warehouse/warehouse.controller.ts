@@ -8,6 +8,7 @@ import {
   Body,
   HttpStatus,
   Res,
+  Query,
   UseGuards,
   Req,
 } from '@nestjs/common';
@@ -17,13 +18,17 @@ import { PostWarehouseRequest } from './post-warehouse.request';
 import { ApiMessage, BaseResponse } from 'src/common/response';
 import { Response } from 'express';
 import { PostWarehouseResponse } from './post-warehouse.response';
-import { GetWarehouseResponse } from './get-warehouse.response';
+import {
+  GetWarehouseResponse,
+  GetWarehousesResponse,
+} from './get-warehouse.response';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { Permission, Role } from 'src/common/enums';
 import { RolesGuard } from 'src/guards/role.guard';
 import { Permissions } from 'src/common/decorators/permissions.decorator';
 import { PermissionsGuard } from 'src/guards/permission.guard';
 import { UserSessionRequest } from 'src/common/interfaces/userSession.interface';
+import { GetWarehouseQuery } from './get-warehouse.query';
 
 @ApiTags('warehouses')
 @Controller('warehouses')
@@ -57,8 +62,13 @@ export class WarehouseController {
   }
 
   @Get()
-  findAll() {
-    return this.warehouseService.findAll();
+  @ApiResponse({ status: HttpStatus.OK, type: GetWarehousesResponse })
+  async findAll(@Query() queries: GetWarehouseQuery, @Res() res: Response) {
+    const { count, warehouses } = await this.warehouseService.findMany(queries);
+
+    return res
+      .status(HttpStatus.OK)
+      .send(GetWarehousesResponse.of(warehouses, count));
   }
 
   @Get(':id')

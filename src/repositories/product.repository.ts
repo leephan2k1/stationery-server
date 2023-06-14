@@ -33,7 +33,7 @@ export class ProductRepository {
     let products, count;
     const conditions = new Map();
 
-    if (name) conditions.set('name', { $regex: `^${name}`, $options: 'i' });
+    if (name) conditions.set('name', { $regex: name, $options: 'i' });
     const objConditions = Object.fromEntries(conditions);
 
     try {
